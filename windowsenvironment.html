@@ -1,0 +1,137 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>windowsでraspberryPiのファイルをgithubを通して行う</h1>
+SSHは怖いので、使わない。<br>
+htmlファイルの修正と確認をwindows環境で同時に行いたい。<br>
+windowsにてhttpサーバーを立ち上げて、vimによるテキスト修正と、ブラウザによる確認をする。<br>
+そのための手引き。<br>
+<h2>参考</h2>
+<div class="pp">
+<ul>
+<li><a href="http://www.atmarkit.co.jp/ait/articles/1306/07/news111.html">Windowsのシンボリックリンクとジャンクションとハードリンクの違い</a>
+</ul>
+<ol>
+<li>windowsのcuiはRUbyコマンドプロンプト
+<li>linuxのcuiはMINWIGW64というターミナル
+</ol>
+1はsourceが使えない<br>
+1はln -sが変<br>
+1はmklinkを使おうとすると「特権が必要です」と怒られる。<br>
+1はmklinkを使おうと思って、suになってmklinkすると、「command not found」と言われ、結局mklinkが使えない。
+2はmklinkが使えない
+
+</div>
+
+<h2>手順紹介</h2>
+
+<h3>1.GitHubに以下のrepositoryを作成</h3>
+<div class="pp">
+<ul>
+<li>raspberrypi_html
+<li>raspberrypi_js
+<li>raspberrypi_css
+<li>raspberrypi_articles
+</ul>
+LICENSEやREADME.mdは任意。<br>
+</div>
+
+<h3>2.Raspi側:各フォルダをローカルリポジトリ化</h3>
+<div class="pp">
+<span class="spanExplain">cssの例</span>
+<pre>
+$ git init
+$ git remote add origin git@github.com:garameki/raspberrypi_css.git
+$ git pull origin master
+$ git add 必要なファイルたち
+$ git commit -m "First Commit"
+$ git push --set-upstream origin master
+</pre>
+</div>
+
+<h3>3.Win側:gitフォルダを作成</h3>
+<div class="pp">
+<span class="spanExplain">cssの例</span>
+<pre>
+$ mkdir git
+$ git clone git@github.com:garameki/raspberrypi_css.git
+$ cd raspberrypi_css
+$ git init
+$ git remote add origin git@github.com:garameki/raspberrypi_css.git
+$ git pull origin master
+最初のpush
+$ git push --set-upstream origin master
+</pre>
+</div>
+
+
+<h3>4.Win側:シンボリックリンクを貼る</h3>
+<div class="pp">
+<span class="spanExplain">管理者権限でコマンドプロンプトを立上げ後</span>
+<pre>
+$ cd &lt;webサーバーのDocumentRoot&gt;
+$ mklink /d html c:\users\usaku\documents\git\raspberrypi_html
+html &lt;&lt;===&gt;&gt; c:\users\usaku\documents\git\raspberrypi_html  のシンボリック リンクが作成されました
+
+$ mklink /d js c:\users\usaku\documents\git\raspberrypi_js
+js &lt;&lt;===&gt;&gt; c:\users\usaku\documents\git\raspberrypi_js のシ ンボリック リンクが作成されました
+
+$ mklink /d css c:\users\usaku\documents\git\raspberrypi_css
+css &lt;&lt;===&gt;&gt; c:\users\usaku\documents\git\raspberrypi_css の シンボリック リンクが作成されました
+
+$ mklink /d articles c:\users\usaku\documents\git\raspberrypi_articles
+articles <<===>> c:\users\usaku\documents\git\raspberrypi_articles のシンボリック リンクが作成されました
+</pre>
+注釈
+<ul>
+<li>スラッシュと、バックスラッシュの違いに注意する。
+<li>管理者でないと、コマンドがはじかれます。
+</ul>
+</div>
+
+
+<h3>5.Win側:ブラウザで確認する</h3>
+<div class="pp">
+<span class="spanExplain">url欄</span>
+<pre>
+http://garameki.com/html/xxxx.html
+</pre>
+xxxx.htmlの部分に編集したいファイル名を入れる
+</div>
+
+<h3>6.Win側:vimで編集</h3>
+<div class="pp">
+vimをつかわないと、LF、CR等が厄介なことになる。つまり、メモ帳は使わない。
+</div>
+
+<h3 style="color:yellow;">7.Win側:作業が終わったらgit pushしておきましょう</h3>
+<div class="pp">
+以下のフォルダをgit stateして、なにもなかったら、作業を終る。<br>
+あった場合、git pushする。
+<ul>
+<li>DocumentRoot/html
+<li>DocumentRoot//js
+<li>DocumentRoot//css
+<li>DocumentRoot//articles
+</ul>
+</div>
+<h3 style="color:yellow;">8.RasPi側:使い初めにはgit pullする</h3>
+<div class="pp">
+以下のディレクトリは更新されている可能性があるから。
+<ul>
+<li>raspberrypi/html
+<li>raspberrypi/js/
+<li>raspberrypi/css/
+<li>raspberrypi/articles/
+</ul>
+</div>
+
+
+<span style="font-size:25px;">最後のpush,最初のpullを忘れて編集するとconflictが起こり、mergeが難しくなります。</span><br>
+<br>
+以上
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
