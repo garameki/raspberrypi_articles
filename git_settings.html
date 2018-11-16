@@ -14,6 +14,7 @@
 </ol>
 <span class="spanExplain">記事1より</span>
 <pre>
+# source code is from <a href="https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d">"https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d</a>
 # Show git branch name
 force_color_prompt=yes
 color_prompt=yes
@@ -21,15 +22,16 @@ parse_git_branch() {
  git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
 }
 if [ "$color_prompt" = yes ]; then
- PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\]\n\$ '
+ PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\]<span class="spanCaution">\n</span>\$ '
 else
- PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(parse_git_branch)\n\$ '
+ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(parse_git_branch)<span class="spanCaution">\n</span>\$ '
 fi
 unset color_prompt force_color_prompt
 </pre>
 これを、user homeの.bashrcの最後に追加する<br>
 <br>
 コマンドプロンプトは、長くなりがちなので、次の行でコマンドを待つようにした。<br>
+<br>
 On Demandな改良は記事2を参考にする。<br>
 
 </div>
