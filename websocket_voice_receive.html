@@ -20,6 +20,48 @@
 <div class="pp">
 </div>
 
+<h2>windowsの中でlinux環境を使うのはなんか大変</h2>
+<div class="pp">
+<ul>
+<li><a href="http://www.atmarkit.co.jp/ait/articles/1306/07/news111.html">Windowsのシンボリックリンクとジャンクションとハードリンクの違い</a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+<ol>
+<li>windowsのcuiはRUbyコマンドプロンプト
+<li>linuxのcuiはMINWIGW64というターミナル
+</ol>
+1はsourceが使えない<br>
+1はln -sが変<br>
+1はmklinkを使おうとすると「特権が必要です」と怒られる。<br>
+1はmklinkを使おうと思って、suになってmklinkすると、「command not found」と言われ、結局mklinkが使えない。
+2はmklinkが使えない
+
+</div>
+<h2>windowsで、シンボリックリンクを貼る</h2>
+<div class="pp">
+<span class="spanExplain">管理者権限でコマンドプロンプトを立上げ後</span>
+<pre>
+$ cd c:\users\<User Name>\documents\kurao
+$ mklink /d html c:\users\usaku\documents\git\raspberrypi_html
+html <<===>> c:\users\usaku\documents\git\raspberrypi_html  のシンボリック リンクが作成されました
+</pre>
+スラッシュと、バックスラッシュの違いに注意する。
+</div>
+
+cd
+cd ~/documents/kurao
+
+<br>
+
+
+
+
+</div>
+
 <h2></h2>
 <div class="pp">
 </div>
