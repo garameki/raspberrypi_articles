@@ -1,0 +1,90 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>Windowsでwebsocketコンテンツの開発</h1>
+<div class="pp">
+	<span class="spanExplain">環境</span>
+	<ol>
+		<li>websocket-serverはRasPiで動いている
+		<li>websocket-clientはRasPiで動いている
+		<li>websocket-clientからは、音データがwebsocket-serverを通して配信される
+	</ol>
+	<span class="spanExplain">条件</span>
+	<ol>
+		<li>音データを受け取り、再生するtestsocket.htmlを作りたいと思っている
+		<li>GitHub:~git/websockets/testsocket.html &lt;---リモートリポジトリ
+		<li>Windows:~git/websockets/testsocket.html &lt;---開発
+		<li>URLは「localhost/sockets/testsocket.html」 &lt;---確認
+	</ol>
+	<span class="spanExplain">やり方は2通り</span>
+	<ol>
+		<li>Apacheの設定を変える方法
+		<li>シンボリックリンクを貼る方法
+	</ol>
+</div>
+
+<h2>Apacheの設定を変える方法</h2>
+<div class="pp">
+	<span class="spanExplain">Win側に~git/socketsフォルダをgit cloneで作成しておく。</span>
+	<pre>
+$ cd ~git
+$ git clone git@github.com:garameki/sockets.git
+	</pre>
+	&lt;IfModule alias_module&gt;&lt;/IfModule&gt;の中に次のディレクティブを挿入する
+	<span class="spanExplain">C:\Apache24\conf\httpd.conf</span>
+	<pre>
+Alias /sockets/ "c:/users/usaku/documents/git/sockets/"
+&lt;Directory "c:/users/usaku/documents/git/sockets"&gt;
+    AllowOverride None
+    Options None
+    Require all granted
+&lt;/Directory&gt;
+&lt;/Directory&gt;
+	</pre>
+	<span class="spanExplain">Win側で開発</span>
+	<pre>
+Apache再スタート
+$ cd c:\Apache24\bin
+$ httpd -k restart
+
+$ cd ~git/sockets
+$ vim testsocket.html
+編集後
+$ git add testsocket.html
+$ git commit -m "Modify"
+$ git push
+ブラウザでlocalhost/test/testsocket.htmlを確認
+	</pre>
+	<span class="spanExplain">RPi側</span>
+	<pre>
+$ cd ~git/sockets
+$ git pull
+	</pre>
+	RPi側でもシンボリックリンク等を貼って、raspberrypi.garameki.com/sockets/testsocket.htmlを確認できる。
+</div>
+
+
+<h2>シンボリックリンクを貼る方法</h2>
+<div class="pp">
+	<span class="spanExplain">Win側:~git/socketsフォルダをgit cloneで作成しておく。</span>
+	<pre>
+$ cd ~git
+$ git clone git@github.com:garameki/sockets.git
+	</pre>
+	<span class="spanExplain">Win側:Rubyコマンドプロンプト(管理者権限)からシンボリックリンクを貼る</span>
+	<pre>
+$ cd DocumentRoot
+$ mklink /d sockets c:\user\usaku\documents\git\sockets
+	</pre>
+	<span class="spanExplain">RPi側:</span>
+	<pre>
+$ cd ~git/sockets
+$ git pull
+	</pre>
+	RPi側でシンボリックリンク等を貼れば、raspberrypi.garameki.com/sockets/testsocket.htmlを確認できる。
+</div>
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
