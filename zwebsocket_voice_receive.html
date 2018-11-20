@@ -1,100 +1,201 @@
 <html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
 <script type="application/javascript" src="script.js"></script>
-<meta name="description" content="">
-<title></title>
+<meta name="description" content="socket serverから音声データを受け取って、再生する">
+<title>音声を受け取り、再生する|がらめきドットコム</title>
 </head><body id="body">
-<h1></h1>
-
-<h2>調査</h2>
+<h1>socket serverから音声データを受け取り、再生する</h1>
+<div class="pp">
+<span class="spanExplain">参考にしたサイト</span>
 <ul>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/AudioContext/decodeAudioData">秀逸 AudioContext.decodeAudioData()</a>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/AudioContext/decodeAudioData#%E6%96%B0%E3%81%97%E3%81%84%E3%83%97%E3%83%AD%E3%83%9F%E3%82%B9%E3%83%99%E3%83%BC%E3%82%B9%E3%81%AE%E6%A7%8B%E6%96%87">秀逸 Web Audio API の基礎</a>
 <li><a href="https://hakuhin.jp/js/audio.html">オーディオについて（HTMLAudioElement）</a>
-<li><a href="https://www.html5rocks.com/ja/tutorials/webaudio/intro/">Web Audio API の基礎</a>
-<li><a href="https://developer.mozilla.org/ja/docs/Web/API/WindowBase64/atob">MDN Web docs : window.atob</a>
+<li><a href="https://www.html5rocks.com/ja/tutorials/webaudio/intro/">秀逸 Web Audio API の基礎</a>
+<li><a href="https://www.html5rocks.com/ja/tutorials/getusermedia/intro/">HTML5 での映像と音声の取得</a>
 <li><a href="https://developer.mozilla.org/en-US/docs/Web/API/AudioBuffer/getChannelData">AudioBuffer.getChannelData()
-<li><a href="http://www.sirochro.com/note/js-queryselector-queryselectorall/">便利なセレクタ querySelector と querySelectorAll の使い方</a>
-<li><a href="https://vim.rtorr.com/lang/ja/">Vim Cheat Sheet</a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer">MDN ArrayBuffer</a>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/JavaScript/Reference/Global_Objects/DataView">MDN DataView</a>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/WindowBase64/atob">MDN Web docs : window.atob</a>
 </ul>
-<div class="pp">
-</div>
-
-<h2>windowsの中でlinux環境を使うのはなんか大変</h2>
-<div class="pp">
+<span class="spanExplain">見かけたサイト</span>
 <ul>
+<li><a href="http://www.sirochro.com/note/js-queryselector-queryselectorall/">便利なセレクタ querySelector と querySelectorAll の使い方</a>
+<li><a href="https://teratail.com/questions/100384">バイナリをFormDataで送るにはBlobクラスでラップしてやる必要があります。</a>
+<li><a href="http://learningthreejs.com/data/live-video-in-webgl/">socketの映像とwebGLを使えば、家の中を再現できるな webGLでのライブ動画</a>
+<li><a href="https://qiita.com/TypoScript/items/0d5b08cecf959b8b822c">qiita File APIs(Blob, BlobURL, ArrayBuffer, FileReader)</a>
+<li><a href="https://vim.rtorr.com/lang/ja/">Vim Cheat Sheet</a>
 <li><a href="http://www.atmarkit.co.jp/ait/articles/1306/07/news111.html">Windowsのシンボリックリンクとジャンクションとハードリンクの違い</a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
 </ul>
-<ol>
-<li>windowsのcuiはRUbyコマンドプロンプト
-<li>linuxのcuiはMINWIGW64というターミナル
-</ol>
-1はsourceが使えない<br>
-1はln -sが変<br>
-1はmklinkを使おうとすると「特権が必要です」と怒られる。<br>
-1はmklinkを使おうと思って、suになってmklinkすると、「command not found」と言われ、結局mklinkが使えない。
-2はmklinkが使えない
-
+逐一、HTTPRequestからのrequest.responseを調べて、同じになるように、オブジェクトを選んでいく作業だった。<br>
 </div>
-<h2>windowsで、シンボリックリンクを貼る</h2>
+<h2>1.デコードされたBase64を格納するバイナリを選択する</h2>
 <div class="pp">
-<span class="spanExplain">管理者権限でコマンドプロンプトを立上げ後</span>
+<span class="spanExplain">バイト配列への変換</span>
 <pre>
-$ cd c:\users\<User Name>\documents\kurao
-$ mklink /d html c:\users\usaku\documents\git\raspberrypi_html
-html <<===>> c:\users\usaku\documents\git\raspberrypi_html  のシンボリック リンクが作成されました
+/* original <a href="https://gist.github.com/borismus/1032746<">https://gist.github.com/borismus/1032746</a> */
+function _convertBase64ToBinary(base64) {
+	var raw = window.atob(base64);
+	var rawLength = raw.length;
+	var array = new Int16Array(new ArrayBuffer(rawLength));
+
+	for(i = 0; i < rawLength; i+=1) {
+		array[i/2] = raw.charCodeAt(i) + raw.charCodeAt(i+1) * 256;
+	}
+	return array;
+};
 </pre>
-スラッシュと、バックスラッシュの違いに注意する。
+<span class="spanExplain">オリジナルと違うところ</span>
+<ul>
+<li>Int16Arrayにデコードしている
+<li>もとの16バイトにする計算が特殊で、下位、上位の順番で並んでいるので、その通りに計算する必要がある。
+</ul>
 </div>
-
-cd
-cd ~/documents/kurao
-
-<br>
-
-
-
-
-</div>
-
-<h2></h2>
+<h2>2.AudioContext.decodeAudioDataへ、ArrayBufferオブジェクトを渡す</h2>
 <div class="pp">
+<span class="spanExplain">ArrayBufferはこうして渡す</span>
+<pre>
+var binaryArray = _convertBase64ToBinary(decodedBase64Data);
+context.decodeAudioData(<span class="spanCaution">binaryArray.buffer</span>);
+</pre>
+_convertBase64ToBinaryのArrayBufferを継承しているからできる技なのか！？
 </div>
+<h2>3.デコードされたデータの取り出し</h2>
+<div class="pp">
+<span class="spanExplain">thenのfunctionに入れておく</span>
+<pre>
+decodeco = decodedData;
+var hoge = setInterval(function(){
+	clearInterval(hoge);
+	source.buffer = decodeco;
+	source.connect(context.destination);
+	source.start(0);
+},100);
+</pre>
+thenのなかに直接再生するコードを入れておいても、鳴らない。<br>
+HTTPRequestのrequest.responseの場合はすぐに再生してくれるのだが、自前のデコードでは時間差が必要らしいということで、インターバルをいれて、再生するようにした。<br>
+本当は、AudioBufferオブジェクトそのものを返したかったのだが、時間差のクロージャの中からどうやって、値を返すのかわからないので、そのまま再生するような仕様にした。<br>
+</div>
+<h3>参考</h3>
+<div class="pp">
+<span class="spanExplain">request.responseの中身</span>
+<pre>
+[[Int8Array]]: Int8Array(13440) [-1, -5, -108, -60, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 105, 110, 103, 0, 0, 0, 15, 0, 0, 0, 44, 0, 0, 52, -128, 0, 13, 13, 22, 22, 29, 29, 34, 34, 34, 42, 42, 51, 51, 57, 57, 68, 68, 68, 74, 74, 80, 80, 87, 87, 95, 95, 95, 102, 102, 110, 110, 119, 119, 119, 125, 125, -122, -122, -115, -115, -110, -110, -110, -104, -104, -100, -100, -91, -91, -84, -84, -84, -79, -79, -72, -72, -66, -66, -66, -59, -59, -52, …]
+[[Int16Array]]: Int16Array(6720) [-1025, -15212, 0, 0, 0, 0, 0, 0, 0, 0, 22528, 28265, 103, 0, 15, 0, 44, 13312, 128, 3341, 5654, 7453, 8738, 10786, 13098, 14643, 17465, 17476, 19018, 20560, 22359, 24415, 26207, 28262, 30574, 30583, 32125, -31098, -29299, -28014, -26478, -25448, -23140, -21339, -21332, -20047, -18248, -16706, -14914, -13115, -11828, -10031, -10024, -8482, -7454, -5912, -5141, -4117, -3857, -3344, -3342, -2828, -2314, -1800, -1286, -774, -260, -2, 255, 0, 19536, 19777, 13125, 14638, 29241, -18172, 0, 0, 16686, 0, 8245, 1060, -32373, 256, 224, 13312, -7296, 15969, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …]
+[[Int32Array]]: Int32Array(3360) [-996869121, 0, 0, 0, 0, 1852397568, 103, 15, 872415276, 218955904, 488445462, 706880034, 959656746, 1145324601, 1347439178, 1600083799, 1852204639, 2004318062, -2038006403, -1835889267, -1667721070, -1398430308, -1313755988, -1094797128, -859454018, -657337908, -555820840, -387390750, -269751317, -219090705, -185273614, -117901578, -50660614, -65796, 255, 1296125008, 959329093, -1190890951, 0, 16686, 69476405, 16810379, 872415456, 1046602624, 149, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -993723393, -1275068416, 11802625, -1366738176, …]
+[[Uint8Array]]: Uint8Array(13440) [255, 251, 148, 196, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 88, 105, 110, 103, 0, 0, 0, 15, 0, 0, 0, 44, 0, 0, 52, 128, 0, 13, 13, 22, 22, 29, 29, 34, 34, 34, 42, 42, 51, 51, 57, 57, 68, 68, 68, 74, 74, 80, 80, 87, 87, 95, 95, 95, 102, 102, 110, 110, 119, 119, 119, 125, 125, 134, 134, 141, 141, 146, 146, 146, 152, 152, 156, 156, 165, 165, 172, 172, 172, 177, 177, 184, 184, 190, 190, 190, 197, 197, 204, …]
+byteLength: (...)
+</pre>
+これらが一致するまで、試行錯誤でバイトArrayを探していった。
+</div>
+<h2>現時点でのコード</h2>
+<ul>
+<li><a href="https://github.com/garameki/raspberrypi_js">GitHub : garameki/raspberrypi_js</a>
+</ul>
+<pre>
+(function(){
+/*
+ *	MIT License
+ *
+ *	Copyright (c) 2018 garameki
+ *
+ *	Permission is hereby granted, free of charge, to any person obtaining a copy
+ *	of this software and associated documentation files (the "Software"), to deal
+ *	in the Software without restriction, including without limitation the rights
+ *	to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *	copies of the Software, and to permit persons to whom the Software is
+ *	furnished to do so, subject to the following conditions:
+ *
+ *	The above copyright notice and this permission notice shall be included in all
+ *	copies or substantial portions of the Software.
+ *
+ *	THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *	IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *	FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *	AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *	LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *	OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ *	SOFTWARE.
+ */
+
+	/*
+	 * Usage:
+	 *	myConvertBase64ToVoice.say(data);
+	 *
+	 *	Args:
+	 *		(Base64 decoded) data : this is decoded Base64 Strings
+	 *	Return:
+	 *		(AudioBuffer) return : AudioBuffer Object
+	 *
+	 */
+
+	/* global */
+	myConvertBase64ToVoice = { };
+
+	Object.defineProperty(myConvertBase64ToVoice,'say',{value:say,writable:false,enumerable:false,configurable:false});
+//	Object.defineProperty(myConvertBase64ToVoice,,'',{value:,writable:false,enumerable:false,configurable:false});
 
 
-	<body style="background-color:black;">
-		<!–右からの吹き出し–>
-		<div class="kaiwa"">
-			<figure class="kaiwa-img-right">
-				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
-				<figcaption class="kaiwa-img-description">
-					USAKU
-				</figcaption>
-			</figure>
-			<div class="kaiwa-text-left">
-				<p class="kaiwa-text">
-					HELLO
-				</p>
-			</div>
-		</div>
-		<!–左からの吹き出し–>
-			<div class="kaiwa">
-				<figure class="kaiwa-img-left">
-					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
-					<figcaption class="kaiwa-img-description">
-						USAKU
-					</figcaption>
-				</figure>
-				<div class="kaiwa-text-right">
-					<p class="kaiwa-text">
-						HELLO HERO
-					</p>
-				</div>
-		</div>
+	/* variables */
 
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+	var decodeco;
+	var nn = 2.0;
+	var context = new AudioContext();
+	var BUFFER_SIZE = context.sampleRate * nn;
+	var audioBuffer = context.createBuffer(1,BUFFER_SIZE,context.sampleRate);
+	var source = context.createBufferSource();
+
+	/* methods */
+
+	function say(data){
+
+		try {
+			var binaryArray = _convertBase64ToBinary(data);
+			var ab = binaryArray.buffer.slice();/* arraybuffer is copied */
+		}catch(err){
+			console.error("Can't convert. augument must be decoded Base64 strings.");
+			console.error(err);
+			console.log('data=',data);
+		}
+
+		context.decodeAudioData(ab).then(function(decodedData) {
+			decodeco = decodedData;
+			var hoge = setInterval(function(){
+				clearInterval(hoge);
+				source.buffer = decodeco;
+				source.connect(context.destination);
+				source.start(0);
+			},100);
+
+		},function(err){
+			console.error('Decode error in AudioContext.decodeAudioData()');
+			console.error(err);
+			console.log(ab);
+		});
+
+	};
+
+	/* inner methods */
+
+	/* https://gist.github.com/borismus/1032746 + my tryal*/
+	/* HTTPRequestのものと比較して決定 */
+
+	function _convertBase64ToBinary(base64) {
+		var raw = window.atob(base64);
+		var rawLength = raw.length;
+		var array = new Int16Array(new ArrayBuffer(rawLength));
+
+		for(i = 0; i < rawLength; i+=1) {
+			array[i/2] = raw.charCodeAt(i) + raw.charCodeAt(i+1) * 256;
+		}
+		return array;
+	};
+
+
+})();
+
+
+
+</pre>
+<br><br>
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181120">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
