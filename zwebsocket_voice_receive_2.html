@@ -11,82 +11,32 @@ websocketサーバーにいくつかのクライアントがkeep-aliveしてい�
 <ul>
 <li><a href="http://maku77.github.io/python/env/call-external-program.html">天才まくまくノート　Python から外部プログラムを起動する (subprocess.run)　</a>
 <li><a href="https://qiita.com/wanwanland/items/ce272419dde2f95cdabc">Pythonでの正規表現の使い方</a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
+<li><a href="https://developer.mozilla.org/ja/docs/Web/API/AudioContext/createBufferSource">MDN AudioContext.createBufferSource()</a>
+<li><a href="https://qiita.com/tkdn/items/ea4f034e0d661def244a"></a>
+<li><a href="https://qiita.com/tkdn/items/ea4f034e0d661def244a#%E3%82%AC%E3%83%99%E3%83%BC%E3%82%B8%E3%82%B3%E3%83%AC%E3%82%AF%E3%82%B7%E3%83%A7%E3%83%B3">JavaScript の仕組み：メモリ管理+ 4つの共通のメモリリーク処理方法</a>
 </ul>
 </div>
 
-<h2>要点</h2>
+<h2>改造点</h2>
 <div class="pp">
+<span class="spanExplain">websocket-client-voice-send-6601.py</span>
 <pre>
+...
 import subprocess
-result = subprocess.run('dir *.txt', shell=True)
+...
+def on_message(ws, message):
+	objSentence = re.search("^SAY(.*)$",message)
+	print(objSentence.group(1))
+	if objSentence.group(1) is not "":
+		try:
+			result = subprocess.run('aquestalkpi/AquesTalkPi "　　　{}"'.format(objSentence.group(1)),shell=True,check=True,stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=False)
+			data2 = base64.b64encode(result.stdout)
+			ws.send(data2)#correct
+		except :
+			print("AquesTalkPi ERROR")
+...
 </pre>
-<pre>
-import io
-tmpFile = io.BytesIO()
-tempFile.write(data)
-</pre>
-<pre>
-</pre>
-<pre>
-</pre>
-<pre>
-</pre>
-
-<li>
-<li>
-<li>
-<li>
-<li>
-<li>
-<li>
-<li>
-<li>
-</ul>
-
+subprocessによって生成されたwavファイルをBase64にエンコードしてwebsocketサーバーに渡している
 </div>
-
-<h2></h2>
-<div class="pp">
-</div>
-
-<h2></h2>
-<div class="pp">
-</div>
-
-
-	<body style="background-color:black;">
-		<!–右からの吹き出し–>
-		<div class="kaiwa"">
-			<figure class="kaiwa-img-right">
-				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
-				<figcaption class="kaiwa-img-description">
-					USAKU
-				</figcaption>
-			</figure>
-			<div class="kaiwa-text-left">
-				<p class="kaiwa-text">
-					HELLO
-				</p>
-			</div>
-		</div>
-		<!–左からの吹き出し–>
-			<div class="kaiwa">
-				<figure class="kaiwa-img-left">
-					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
-					<figcaption class="kaiwa-img-description">
-						USAKU
-					</figcaption>
-				</figure>
-				<div class="kaiwa-text-right">
-					<p class="kaiwa-text">
-						HELLO HERO
-					</p>
-				</div>
-		</div>
-
+<br><br>
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
