@@ -1,4 +1,5 @@
-<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><script type="application/javascript" src="script.js"></script>
+﻿<html lang='ja'>
+<head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><script type="application/javascript" src="script.js"></script>
 <meta name="description" content="Gitから、GitHubにPUSHできるようにする">
 <title>Gitから、GitHubにPUSHできるようにする|がらめきドットコム</title>
 </head><body id="body">
@@ -27,7 +28,7 @@ remote: Compressing objects: 100% (4/4), done.
 remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
 Unpacking objects: 100% (4/4), done.
 $ <span class="spanCaution">cd max31856</span>
-$ <span class="spanCaution">echo test > max31856.py</span>
+$ <span class="spanCaution">echo test &gt; max31856.py</span>
 $ <span class="spanCaution">git add max31856.py</span>
 $ <span class="spanCaution">git commit -m 'First commit'</span>
 
@@ -56,7 +57,7 @@ $ <span class="spanCaution">git commit -m 'First commit'</span>
   Writing objects: 100% (3/3), 1.26 KiB | 0 bytes/s, done.
   Total 3 (delta 0), reused 0 (delta 0)
   To https://github.com/garameki/max31856.git
-     9f64c52..cae629b  master -> master
+     9f64c52..cae629b  master -&gt; master
 $ <span class="spanCaution">echo</span> <span style="color:skyblue;">github.com/garamekiに行ってmax31856.pyがアップロードされているか確かめた</span>
 </pre>
 <br>
@@ -76,7 +77,7 @@ remote: error: GH007: Your push would publish a private email address.
 remote: You can make your email public or disable this protection by visiting:
 remote: http://github.com/settings/emails
 To https://github.com/garameki/max31856.git
- ! [remote rejected] master -> master (push declined due to email privacy restrictions)
+ ! [remote rejected] master -&gt; master (push declined due to email privacy restrictions)
  error: failed to push some refs to 'https://github.com/garameki/max31856.git'
 </pre>
 原因はGitHubのe-mail設定がPublicになっていないためらしい。<br><br>
@@ -99,7 +100,7 @@ Writing objects: 100% (3/3), 919 bytes | 0 bytes/s, done.
 Total 3 (delta 2), reused 0 (delta 0)
 remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
 To https://github.com/garameki/max31856.git
-   cae629b..3b29514  master -> master
+   cae629b..3b29514  master -&gt; master
 </pre>
 pushできるが、これでは面倒くさい。
 
@@ -164,7 +165,7 @@ Writing objects: 100% (3/3), 280 bytes | 0 bytes/s, done.
 Total 3 (delta 2), reused 0 (delta 0)
 remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
 To github.com:garameki/max31856.git
-   3d1bc62..05377a3  master -> master
+   3d1bc62..05377a3  master -&gt; master
    Branch master set up to track remote branch master from origin.
 </pre>
 <br>
@@ -178,6 +179,22 @@ ssh-keygenですでに存在しているkeyを上書きできないときは、�
 
 </div>
 
+<h1>windowsからのgit pushはCRLFをLFにしてアップロードするように設定する</h1>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://qiita.com/yokoh9/items/1ec8099696ade0c1f36e">qiita : windows環境の git で改行コードの自動変換に注意</a>
+<li><a href="https://help.github.com/articles/dealing-with-line-endings/#platform-windows">GitHub help : Dealing with line endings</a>
+</ul>
+<span class="spanExplain">GitHubにアップするときにCRを削除する設定</span>
+<pre>
+$ git config --global core.autoCRLF true
+</pre>
+こうすることによって、メモ帳で編集したコードの改行'CRLF'が、vimで編集したときの改行'LF'になる。<br>
+ただし、逆にメモ帳では編集できなくなる。あと、ラズパイ側で、vimで編集しようとしても、文字化けしてて、保存不可になる。
+</div>
+
+</div>
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181106">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
 <br>
 <img right="GitHub ,inc." src="OCTOCAT.jpg">
