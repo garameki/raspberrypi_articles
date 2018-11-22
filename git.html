@@ -180,33 +180,71 @@ ssh-keygenですでに存在しているkeyを上書きできないときは、�
 
 </div>
 
-<h1>windowsからのgit pushはCRLFをLFにしてアップロードするように設定する</h1>
+<h1>Windowsのメモ帳で編集したファイルのgit pushについて</h1>
 <div class="pp">
 <span class="spanExplain">参考サイト</span>
 <ul>
 <li><a href="https://qiita.com/yokoh9/items/1ec8099696ade0c1f36e">qiita : windows環境の git で改行コードの自動変換に注意</a>
 <li><a href="https://help.github.com/articles/dealing-with-line-endings/#platform-windows">GitHub help : Dealing with line endings</a>
+<li><a href="https://qiita.com/akmiyoshi/items/cae34407849cb8c2da1a">カレントディレクトリ以下で改行コードがCR+LFのファイルを探す</a>
+<li><a href="https://eng-entrance.com/linux-shellscript-replacement">シェルスクリプトによる置換や削除</a>
+<li><a href=""></a>
+<li><a href=""></a>
+
 </ul>
-<span class="spanExplain">GitHubにアップするときにCRを削除する設定</span>
+<h2>git push時にLFをCRLFにする機能をOFFにする</h2>
+<div class="pp">
+Linuxユーザーは使わないのでOFFにしておく。cloneするLinuxユーザーのためにもoffにしておく。
 <pre>
-$ git config --global core.autoCRLF true
+$ <span class="spanCaution">git config --global core.autoCRLF false</span>
 </pre>
-こうすることによって、メモ帳で編集したコードの改行'CRLF'が、vimで編集したときの改行'LF'になる。<br>
-ただし、逆にメモ帳では編集できなくなる。あと、ラズパイ側で、vimで編集しようとしても、文字化けしてて、保存不可になる。<br>
-これを防ぐには、<span class="spanCaution">メモ帳側</span>で、<span class="spanCaution">保存</span>するときに<span class="spanCaution">UTF-8</span>を選択しておくことだ。<br>
-最初から最後までvimで編集したファイルをメモ帳で開くと、改行がない状態で表示される。<br>
-しかし、このファイルに一つでもCRLFが存在すると、次にpullしてメモ帳で開くと全てのLFがCRLFに替わっているので、編集が可能になる。
-<span class="spanExplain">メモ帳を使うときにやること</span>
+</div>
+<h2>メモ帳の保存時にUTF-8を指定する</h2>
+<h2>ファイルからCRを削除しておく</h2>
+<div class="pp">
+<span class="spanExplain">参考リンク</span>
 <ul>
-<li>「git config --global core.autoCRLF true」の実行
-<li>メモ帳はUTF-8で保存
+<li><a href="https://eng-entrance.com/linux-shellscript-replacement">シェルスクリプトによる置換や削除</a>
+<li><a href="https://qiita.com/akmiyoshi/items/cae34407849cb8c2da1a">カレントディレクトリ以下で改行コードがCR+LFのファイルを探す</a>
 </ul>
-<span class="spanExplain">効果</span>
-<ul>
-<li>リポジトリへはLFで保存してくれる
-<li>ファイル内にCRが一つでもあると、すべての行末にCRLFを付けてくれる
-</ul>
+<span class="spanExplain">CRを削除してもとのファイルを書き換えるコマンド</span>
+<pre>
+$ <span class="spanCaution">sed -e 's/\r//g' * -i</span>
+</pre>
+<span class="spanExplain">CRLFが存在するファイル名を表示するコマンド</span>
+<pre>
+$ <span class="spanCaution">find . -type f | xargs grep -lzUP '\r\n'</span>
+</pre>
+<span class="spanExplain">実行結果</span>
+<pre>
+$ <span class="spanCaution">find . -type f | xargs grep -lzUP '\r\n'</span>
+./.git/objects/1c/c66e9a7d2967d0245c240ae63fbd84b4c39802
+./.git/objects/5d/a94d7bc07f8fbdfa32d823dd71ae65edd5276f
+./.git/objects/9e/b8a39270104e9269ed8cacc25927b617d74b97
+./.git/objects/e4/11670e80d7e71224413b46edae0061329ddf44
+./git.html
+./led7seg42.html
+./led7seg4_1.jpg
+./led7seg4_2.jpg
+./LICENSE
+./README.md
+./style.css
+./style_fukidashi.css
+./template.html
+./test2.txt
+
+$ <span class="spanCaution">sed -e 's/\r//g' * -i</span>
+
+$ <span class="spanCaution">find . -type f | xargs grep -lzUP '\r\n'</span>
+./.git/objects/1c/c66e9a7d2967d0245c240ae63fbd84b4c39802
+./.git/objects/5d/a94d7bc07f8fbdfa32d823dd71ae65edd5276f
+./.git/objects/9e/b8a39270104e9269ed8cacc25927b617d74b97
+./.git/objects/e4/11670e80d7e71224413b46edae0061329ddf44
+</pre>
+確かにCRLFがなくなっている。<br>
+<span style="color:magenta;font-size:25px;">あれ！？JPGファイルまで変更されている！！！！</span>
+</div>
+
 </div>
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181106">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
-でも、なんか気持ち悪さが残る。<br>
 <img right="GitHub ,inc." src="OCTOCAT.jpg">
