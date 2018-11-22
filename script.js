@@ -1,5 +1,12 @@
 onload = function() {
-	replace_img_h3();
+	var element = document.createElement('script');
+	element.type = 'application/javascript';
+	element.src = '/js/myImgReplace.js';
+	document.getElementsByTagName('head')[0].appendChild(element);
+	var hoge = setInterval(function(){
+		clearInterval(hoge);
+		myImgReplace.replace('h4');
+	},100);
 };
 
 function replace_img_h3(){
