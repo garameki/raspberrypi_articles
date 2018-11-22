@@ -207,7 +207,8 @@ $ <span class="spanCaution">git config --global core.autoCRLF false</span>
 <li><a href="https://eng-entrance.com/linux-shellscript-replacement">シェルスクリプトによる置換や削除</a>
 <li><a href="https://qiita.com/akmiyoshi/items/cae34407849cb8c2da1a">カレントディレクトリ以下で改行コードがCR+LFのファイルを探す</a>
 </ul>
-<span class="spanExplain">CRを削除してもとのファイルを書き換えるコマンド</span>
+<span class="spanExplain" style="text-decoration:line-through">CRを削除してもとのファイルを書き換えるコマンド</span>
+<span class="spanExplain" style="color:yellow;">危険なコマンドです</span>
 <pre>
 $ <span class="spanCaution">sed -e 's/\r//g' * -i</span>
 </pre>
@@ -242,7 +243,104 @@ $ <span class="spanCaution">find . -type f | xargs grep -lzUP '\r\n'</span>
 ./.git/objects/e4/11670e80d7e71224413b46edae0061329ddf44
 </pre>
 確かにCRLFがなくなっている。<br>
-<span style="color:magenta;font-size:25px;">あれ！？JPGファイルまで変更されている！！！！</span>
+<span style="color:magenta;font-size:25px;">あれ！？JPGファイルまで変更されている！！！！</span><br>
+<span class="spanExplain">こんな感じ</span>
+<img src="git_1.jpg"><br>
+<span class="spanExplain">(なぜか)リモートリポジトリから取り戻した</span>
+<pre>
+$ <span class="spanCaution">rm led7seg4_*.jpg</span>
+
+$ <span class="spanCaution">git status</span>
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add/rm &lt;file&gt;..." to update what will be committed)
+  (use "git checkout -- &lt;file&gt;..." to discard changes in working directory)
+
+        modified:   LICENSE
+        modified:   README.md
+        modified:   git.html
+        modified:   led7seg42.html
+        deleted:    led7seg4_1.jpg
+        deleted:    led7seg4_2.jpg
+        deleted:    led7seg4_3.jpg
+        modified:   style.css
+        modified:   style_fukidashi.css
+        modified:   template.html
+        modified:   test2.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+$ <span class="spanCaution">git add LICENSE README.md git.html led7seg42.html style.css style_fukidashi.css template.html test2.txt</span>
+
+$ <span class="spanCaution">git commit -m "After removing CRLF"</span>
+[master e457cfa] After removing CRLF
+ 2 files changed, 288 insertions(+), 250 deletions(-)
+
+$ <span class="spanCaution">git push</span>
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+Counting objects: 4, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (4/4), done.
+Writing objects: 100% (4/4), 2.43 KiB | 1.21 MiB/s, done.
+Total 4 (delta 3), reused 0 (delta 0)
+remote: Resolving deltas: 100% (3/3), completed with 3 local objects.
+To github.com:garameki/raspberrypi_articles.git
+   86abddb..e457cfa  master -&gt; master
+
+$ <span class="spanCaution">git pull</span>
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+Already up to date.
+
+$ <span class="spanCaution">git status</span>
+On branch master
+Your branch is up to date with 'origin/master'.
+
+Changes not staged for commit:
+  (use "git add/rm &lt;file&gt;..." to update what will be committed)
+  (use "git checkout -- &lt;file&gt;..." to discard changes in working directory)
+
+        deleted:    led7seg4_1.jpg
+        deleted:    led7seg4_2.jpg
+        deleted:    led7seg4_3.jpg
+
+no changes added to commit (use "git add" and/or "git commit -a")
+
+$ <span class="spanCaution">git checkout -- led7seg4_*.jpg</span>
+
+$ <span class="spanCaution">git status</span>
+On branch master
+Your branch is up to date with 'origin/master'.
+
+nothing to commit, working tree clean
+
+$ <span class="spanCaution">git pull</span>
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+Already up to date.
+
+$ <span class="spanCaution">ls</span>
+total 374
+drwxr-xr-x 1 usaku 197121      0 11月 22 15:54 .git
+drwxr-xr-x 1 usaku 197121      0 11月 22 15:54 .
+-rw-r--r-- 1 usaku 197121 110625 11月 22 15:54 led7seg4_1.jpg
+-rw-r--r-- 1 usaku 197121 101030 11月 22 15:54 led7seg4_2.jpg
+-rw-r--r-- 1 usaku 197121  95071 11月 22 15:54 led7seg4_3.jpg
+-rw-r--r-- 1 usaku 197121  12152 11月 22 15:49 git.html
+-rw-r--r-- 1 usaku 197121    149 11月 22 15:35 test2.txt
+-rw-r--r-- 1 usaku 197121   1343 11月 22 15:35 template.html
+-rw-r--r-- 1 usaku 197121    942 11月 22 15:35 style.css
+-rw-r--r-- 1 usaku 197121   3744 11月 22 15:35 style_fukidashi.css
+-rw-r--r-- 1 usaku 197121     57 11月 22 15:35 README.md
+-rw-r--r-- 1 usaku 197121   1830 11月 22 15:35 script.js
+-rw-r--r-- 1 usaku 197121   1065 11月 22 15:35 LICENSE
+-rw-r--r-- 1 usaku 197121   1124 11月 22 15:35 led7seg42.html
+-rw-r--r-- 1 usaku 197121   9686 11月 22 15:35 led7seg4.html
+</pre>
+<span class="spanExplain">ターゲットを絞ってCRLFを消す！</span>
+<pre>
+$ <span class="spanCaution">sed -e 's/\r//g' *.html -i</span>
+</pre>
 </div>
 
 </div>
