@@ -192,10 +192,21 @@ ssh-keygenですでに存在しているkeyを上書きできないときは、�
 $ git config --global core.autoCRLF true
 </pre>
 こうすることによって、メモ帳で編集したコードの改行'CRLF'が、vimで編集したときの改行'LF'になる。<br>
-ただし、逆にメモ帳では編集できなくなる。あと、ラズパイ側で、vimで編集しようとしても、文字化けしてて、保存不可になる。
-</div>
-
+ただし、逆にメモ帳では編集できなくなる。あと、ラズパイ側で、vimで編集しようとしても、文字化けしてて、保存不可になる。<br>
+これを防ぐには、<span class="spanCaution">メモ帳側</span>で、<span class="spanCaution">保存</span>するときに<span class="spanCaution">UTF-8</span>を選択しておくことだ。<br>
+最初から最後までvimで編集したファイルをメモ帳で開くと、改行がない状態で表示される。<br>
+しかし、このファイルに一つでもCRLFが存在すると、次にpullしてメモ帳で開くと全てのLFがCRLFに替わっているので、編集が可能になる。
+<span class="spanExplain">メモ帳を使うときにやること</span>
+<ul>
+<li>「git config --global core.autoCRLF true」の実行
+<li>メモ帳はUTF-8で保存
+</ul>
+<span class="spanExplain">効果</span>
+<ul>
+<li>リポジトリへはLFで保存してくれる
+<li>ファイル内にCRが一つでもあると、すべての行末にCRLFを付けてくれる
+</ul>
 </div>
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181106">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
-<br>
+でも、なんか気持ち悪さが残る。<br>
 <img right="GitHub ,inc." src="OCTOCAT.jpg">
