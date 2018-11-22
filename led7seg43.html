@@ -1,0 +1,94 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title>I2Cのslaveを増設|がらめきドットコム</title>
+</head><body id="body">
+<h1>I2Cのslaveを増設</h1>
+4Digits 7Segment LEDの点灯に成功したことに気をよくして、もう一つ、4Digits　7Segment　LEDを増やして、温度をリアルタイムで表示してみる。<br>
+今回も使うのはHT16K33が搭載されたIPOTCH製の4Digit 7Segmint LEDモジュールである。
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="http://akizukidenshi.com/download/ds/holtek/ht16K33v110.pdf">秋月電子通商 : PDF : HT16K33</a>
+<li><a href="https://learn.adafruit.com/adafruit-led-backpack/downloads#ht16k33-8x16-led-backpack-breakout-12-3">Adafruit : 回路図 : HT16K33 8x16 LED Backpack Breakout</a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+
+<h2>スレーブアドレス</h2>
+<div class="pp">
+<span class="spanExplain">ピン配置</span>
+<img right="秋月電子通商" src="led7seg43_2.jpg">
+Pin Description
+<table>
+<tr><th colspan="3">28 Pin Package</th></tr>
+<tr><td>ROW0/A1～ROW1/A0</td><td>I/O</td><td><ul><li>ROW output pin, active high when displaying<li>Also used as the device address data iput pin, internal pull-low during a poweron reset and during a key scan operation</td></tr></table>
+<br>
+<table style="border:0px;">
+<tr style="border:0px"><th style="border:0px">MSB</th><th colspan="8" style="border:0px"></th><th style="border:0px">LSB</th></tr>
+<tr style="border:0px"><td style="border:0px"></td><td>1</td><td>1</td><td>1</td><td>0</td><td>A2</td><td>A1</td><td>A0</td><td>R/W</td></tr>
+</table>
+<br><br>
+<span class="spanExplain">回路上のA2～A0</span>
+<img src="led7seg43_1.jpg">
+テスタで確認できる。<br>
+</div>
+
+
+<h2>スレーブアドレスを変更する</h2>
+<div class="pp">
+はんだ付けするディップスイッチがあるのだけれど、どれがどのビットに対応しているのかわからない。
+
+</div>
+
+<h2>デバイスのdetect</h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+	<body style="background-color:black;">
+		<!–右からの吹き出し–>
+		<div class="kaiwa"">
+			<figure class="kaiwa-img-right">
+				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
+				<figcaption class="kaiwa-img-description">
+					USAKU
+				</figcaption>
+			</figure>
+			<div class="kaiwa-text-left">
+				<p class="kaiwa-text">
+					HELLO
+				</p>
+			</div>
+		</div>
+		<!–左からの吹き出し–>
+			<div class="kaiwa">
+				<figure class="kaiwa-img-left">
+					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
+					<figcaption class="kaiwa-img-description">
+						USAKU
+					</figcaption>
+				</figure>
+				<div class="kaiwa-text-right">
+					<p class="kaiwa-text">
+						HELLO HERO
+					</p>
+				</div>
+		</div>
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
