@@ -1,0 +1,183 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><script type="application/javascript" src="script.js"></script>
+<meta name="description" content="Gitから、GitHubにPUSHできるようにする">
+<title>Gitから、GitHubにPUSHできるようにする|がらめきドットコム</title>
+</head><body id="body">
+<h1>Gitから、GitHubにPUSHできるようにする</h1>
+<div class="pp">
+<ul>
+<li><a href="https://git-scm.com/book/ja/v1/Git-%E3%81%AE%E3%82%AB%E3%82%B9%E3%82%BF%E3%83%9E%E3%82%A4%E3%82%BA-Git-%E3%81%AE%E8%A8%AD%E5%AE%9A">Git</a>
+<li><a href="http://vdeep.net/github#SSH">参考 GitHubの登録手順</a>
+<li><a href="http://soramugi.hateblo.jp/entry/2012/02/12/234946">参考 GitHubに登録して複数のPCからpushできるように設定する方法まとめ</a>
+</ul>
+Gitは最初から入っている。<br>
+SSH使わなくても、アカウントとパスワードがあれば、pushできるが、毎回ユーザー名とパスワードを聞かれてうざいのでSSHを登録することにする。<br>
+鍵を生成したときに入力したパスワードを、git push --set-upstream origin masterするとき聞かれるから、忘れない。
+</div>
+<h2>やったこと</h2>
+<div class="pp">
+<pre>
+$ <span class="spanCaution">mkdir ~/git</span>
+$ <span class="spanCaution">cd ~/git</span>
+$ <span class="spanCaution">echo</span> <span style="color:skyblue;">githubにmax31856リポジトリを作成して、</span><span style="background-color:lightgreen;color:white;">clone or download</span><span style="color:skyblue;">からURLをクリップ</span>
+$ <span class="spanCaution">git clone https://github.com/garameki/max31856.git</span>
+loning into 'max31856'...
+remote: Enumerating objects: 4, done.
+remote: Counting objects: 100% (4/4), done.
+remote: Compressing objects: 100% (4/4), done.
+remote: Total 4 (delta 0), reused 0 (delta 0), pack-reused 0
+Unpacking objects: 100% (4/4), done.
+$ <span class="spanCaution">cd max31856</span>
+$ <span class="spanCaution">echo test > max31856.py</span>
+$ <span class="spanCaution">git add max31856.py</span>
+$ <span class="spanCaution">git commit -m 'First commit'</span>
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: empty ident name (for <(null)>) not allowed
+$ <span class="spanCaution">git config --global user.email "---------------@gmail.com"</span>
+$ <span class="spanCaution">git config --global user.name "garameki"</span>
+$ <span class="spanCaution">git commit -m 'First commit'</span>
+[master cae629b] First commit
+ 1 file changed, 72 insertions(+)
+  create mode 100644 max31856.py
+  pi@raspberrypi:~/git/max31856 $ git push
+  Username for 'https://github.com': garameki
+  Password for 'https://garameki@github.com': **************************
+  Counting objects: 3, done.
+  Delta compression using up to 4 threads.
+  Compressing objects: 100% (3/3), done.
+  Writing objects: 100% (3/3), 1.26 KiB | 0 bytes/s, done.
+  Total 3 (delta 0), reused 0 (delta 0)
+  To https://github.com/garameki/max31856.git
+     9f64c52..cae629b  master -> master
+$ <span class="spanCaution">echo</span> <span style="color:skyblue;">github.com/garamekiに行ってmax31856.pyがアップロードされているか確かめた</span>
+</pre>
+<br>
+その後git pushができなくなった。<br>
+<br>
+<pre>
+$ <span class="spanCaution">git push</span>
+Username for 'https://github.com': garameki
+Password for 'https://garameki@github.com': 
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 919 bytes | 0 bytes/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+remote: error: GH007: Your push would publish a private email address.
+remote: You can make your email public or disable this protection by visiting:
+remote: http://github.com/settings/emails
+To https://github.com/garameki/max31856.git
+ ! [remote rejected] master -> master (push declined due to email privacy restrictions)
+ error: failed to push some refs to 'https://github.com/garameki/max31856.git'
+</pre>
+原因はGitHubのe-mail設定がPublicになっていないためらしい。<br><br>
+<pre>
+まず、エラーメッセージの<a href="https://git-scm.com/book/ja/v1/Git-%E3%81%AE%E5%9F%BA%E6%9C%AC-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%81%A7%E3%81%AE%E4%BD%9C%E6%A5%AD">URL</a>にアクセスする。<br>
+次に「Block command line pushes that expose my email」のチェックを外す。
+(「Keep my email address private」のチェックを外すとメールアドレスが公開されてしまうので、チェックははずさない。)<br>
+</pre>
+そしたらpushできるようになった。<br>
+<br>
+しかし、ユーザー名とパスワードをpushのたびに聞いてくる。<br>
+<pre>
+$ <span class="spanCaution">git push</span>
+<span class="spanCaution">Username for 'https://github.com': garameki</span>
+<span class="spanCaution">Password for 'https://garameki@github.com':</span>
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 919 bytes | 0 bytes/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To https://github.com/garameki/max31856.git
+   cae629b..3b29514  master -> master
+</pre>
+pushできるが、これでは面倒くさい。
+
+<ul>
+<li><a href="https://qiita.com/hash/items/5e4a6551b9f56f0af9dc">参考 GitHubにpushする度にusername/passwordを求められるとき</a>
+<li><a href="https://git-scm.com/book/ja/v1/Git-%E3%81%AE%E5%9F%BA%E6%9C%AC-%E3%83%AA%E3%83%A2%E3%83%BC%E3%83%88%E3%81%A7%E3%81%AE%E4%BD%9C%E6%A5%AD">参考 Git-Remote</a>
+</ul>
+上記を参考に、originを書き換える
+<pre>
+$ <span class="spanCaution">git remote -v</span>
+origin	https://github.com/garameki/max31856.git (fetch)
+origin	https://github.com/garameki/max31856.git (push)
+$ <span class="spanCaution">git remote rm origin</span>
+$ <span class="spanCaution">git remote -v</span>
+$ <span class="spanCaution">git remote add origin git@github.com:garameki/max31856.git</span>
+$ <span class="spanCaution">git remote -v</span>
+origin	git@github.com:garameki/max31856.git (fetch)
+origin	git@github.com:garameki/max31856.git (push)
+</pre>
+次に、GitHubのアカウントのSSHに新しく作ったPublic Keyを入れる。
+<pre>
+$ <span class="spanCaution">ssh-keygen</span>
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/pi/.ssh/id_rsa): 
+/home/pi/.ssh/id_rsa already exists.
+Overwrite (y/n)? y
+Enter passphrase (empty for no passphrase): 
+Enter same passphrase again: 
+Your identification has been saved in /home/pi/.ssh/id_rsa.
+Your public key has been saved in /home/pi/.ssh/id_rsa.pub.
+The key fingerprint is:
+SHA256:F08O/lAqENw/gIER+N5XNXyBwQUruVvFCjJkEFMayi8 pi@raspberrypi
+The key's randomart image is:
++---[RSA 2048]----+
+|   .o=BB+  oo=o. |
+|  ....oBo  .*o.  |
+|   .o o oo*.+oo  |
+|    .. . ++% o   |
+|   .E.. S.*.=    |
+|    ... .o =     |
+|       .  . .    |
+|                 |
+|                 |
++----[SHA256]-----+
+$ <span class="spanCaution">chmod 444 ~/.ssh/id_rsa.pub</span>
+$ <span class="spanCaution">chmod 400 ~/.ssh/id_rsa</span>
+$ <span class="spanCaution">ls -l ~/.ssh</span>
+合計 20
+-r--r--r-- 1 pi pi  396 11月  6 19:23 id_rsa.pub
+-r-------- 1 pi pi 1766 11月  6 19:23 id_rsa
+-rw-r--r-- 1 pi pi 1326 11月  6 19:01 known_hosts
+</pre>
+gitのmax31856ディレクトリに入って、pushする
+<pre>
+$ <span class="spanCaution">cd ~/git/max31856</span>
+$ <span class="spanCaution">git push --set-upstream origin master</span>
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+Counting objects: 3, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (3/3), 280 bytes | 0 bytes/s, done.
+Total 3 (delta 2), reused 0 (delta 0)
+remote: Resolving deltas: 100% (2/2), completed with 2 local objects.
+To github.com:garameki/max31856.git
+   3d1bc62..05377a3  master -> master
+   Branch master set up to track remote branch master from origin.
+</pre>
+<br>
+できた。<br>
+<br>
+<br>
+ssh-keygenですでに存在しているkeyを上書きできないときは、パーミッションのwを有効にしてから行う。<br>
+<br>
+<br>
+いままでGitを使っていたノートもsshを変えておかないと。。。
+
+</div>
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181106">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br>
+<img right="GitHub ,inc." src="OCTOCAT.jpg">
