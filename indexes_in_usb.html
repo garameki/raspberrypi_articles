@@ -3,32 +3,42 @@
 <meta name="description" content="">
 <title></title>
 </head><body id="body">
-<h1>ApacheにUSBの中身をOptions Indexesさせる</h1>
-<span class="spanExplain">参考サイト</span>
-<ul>
-<li><a href="https://stackoverflow.com/questions/21878647/allow-apache-php-a-read-write-access-to-a-mounted-directory">Allow Apache/PHP a read/write access to a mounted directory</a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-<li><a href=""></a>
-</ul>
-<h2></h2>
+<h1>ApacheにUSBの中身をインデックスで表示させる</h1>
+ログをブラウザから確認するとか、google spread sheetsにコピペする時とかに使うため。
+
+<h2>/media/pi/TOSHIBA/dataのOptions Indexesを有効化</h2>
 <div class="pp">
+<span class="spanExplain">権限</span>
 <pre>
-$ mount -v -t cifs //192.168.1.19/sample_dir /mnt/mount_dir -o username="admin",password=adminpwd,domain=MIINTER,iocharset=utf8,file_mode=0777,dir_mode=0777,context="system_u:object_r:httpd_sys_content_t:s0"
-$ mount -v -t cifs //192.168.1.19/sample_dir /mnt/mount_dir -o username="admin",password=adminpwd,domain=MIINTER,iocharset=utf8,file_mode=0777,dir_mode=0777,context="system_u:object_r:httpd_sys_content_t:s0"
+drwxr-xr-x   3 root root  4096 11月  9 21:44 /media
+drwxr-xr-x+ 4 755 root 4096 11月 24 16:24 /media/pi
+drwxr-xr-x 4 pi   root 4096 11月 24 10:58 /media/pi/TOSHIBA
+drwxr-x--- 2 pi   www-data 4096 11月 24 10:58 /media/pi/TOSHIBA/data
 </pre>
+<span class="spanExplain">マウント状態</span>
+<pre>
+$ mount -l | grep TOSHIBA
+/dev/sda1 on /media/pi/TOSHIBA type ext4 (rw,nosuid,nodev,relatime,data=ordered,uhelper=udisks2) [TOSHIBA]
+</pre>
+<span class="spanExplain">/etc/apache2/sites-available/raspberrypi.confに追加する設定</span>
+<pre>
+	Alias /data/ /media/pi/TOSHIBA/data/
+	<Directory "/media/pi/TOSHIBA/data">
+		AllowOverride None
+		Options Indexes
+		Require all granted
+	</Directory>
+</pre>
+<span class="spanExplain">Apache2の再起動</span>
+<pre>
+$ sudo service apache2 restart
+</pre>
+<span class="spanExplain">ブラウザで確認</span>
+<pre>
+raspberrypi.garameki.com/data/
+</pre>
+<img src="indexes_in_usb_1.jpg">
 </div>
 
-<h2></h2>
-<div class="pp">
-</div>
 
-<h2></h2>
-<div class="pp">
-</div>
-
-
-
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181124">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
