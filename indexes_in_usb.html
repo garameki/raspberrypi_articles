@@ -1,0 +1,34 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>ApacheにUSBの中身をOptions Indexesさせる</h1>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://stackoverflow.com/questions/21878647/allow-apache-php-a-read-write-access-to-a-mounted-directory">Allow Apache/PHP a read/write access to a mounted directory</a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+<h2></h2>
+<div class="pp">
+<pre>
+$ mount -v -t cifs //192.168.1.19/sample_dir /mnt/mount_dir -o username="admin",password=adminpwd,domain=MIINTER,iocharset=utf8,file_mode=0777,dir_mode=0777,context="system_u:object_r:httpd_sys_content_t:s0"
+$ mount -v -t cifs //192.168.1.19/sample_dir /mnt/mount_dir -o username="admin",password=adminpwd,domain=MIINTER,iocharset=utf8,file_mode=0777,dir_mode=0777,context="system_u:object_r:httpd_sys_content_t:s0"
+</pre>
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
