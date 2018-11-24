@@ -5,8 +5,15 @@
 </head><body id="body">
 <h1>ApacheにUSBの中身をインデックスで表示させる</h1>
 ログをブラウザから確認するとか、google spread sheetsにコピペする時とかに使うため。
-
-<h2>/media/pi/TOSHIBA/dataのOptions Indexesを有効化</h2>
+<span class="spanExplain">コンテクスト</span>
+<ul>
+<li>/media/pi/TOSHIBAがUSBメモリのマウントポイント
+<li>/media/pi/TOSHIBA/data/にcsvデータファイルが入っている
+<li>raspberrypi.garameki.com/data/にブラウザからアクセスするとIndexes表示になる
+</ul>
+<h2>1.cronなどの、USBメモリにアクセスするプロセスを無くしておく</h2>
+<h2>2.パーミッション関係の設定</h2>
+/media/pi/TOSHIBA/dataをIndexes表示させるために～
 <div class="pp">
 <span class="spanExplain">権限</span>
 <pre>
@@ -37,8 +44,24 @@ $ sudo service apache2 restart
 <pre>
 raspberrypi.garameki.com/data/
 </pre>
-<img src="indexes_in_usb_1.jpg">
+<img src="indexes_in_usb_1.jpg"><br>
+<div>
+
+<h2><span class="spanCaution" style="font-size:25px;">cronのコメントアウトを戻しておく</span></h2>
+<div class="pp">
+データログの再開
 </div>
 
+<h2>Google Spread Sheetsに上げてグラフを描いてみたい</h2>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://qiita.com/murata0705/items/bb4b5c5490658ed0de4b">Qiita : グーグルスプレッドシート(GoogleSpreadSheet)でカンマ区切り文字列を分割してセルごとに貼り付ける方法</a>
+<li><a href="https://www.appsupport.jp/docs/spreadsheet-graph/">入力したデータを元にグラフを作成</a>
+</ul>
+<img src="indexes_in_usb_2.jpg">
+できた
+
+</div>
 
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181124">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
