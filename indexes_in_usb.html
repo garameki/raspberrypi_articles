@@ -4,6 +4,7 @@
 <title></title>
 </head><body id="body">
 <h1>ApacheにUSBの中身をインデックスで表示させる</h1>
+<img src="indexes_in_usb_1.jpg"><br>
 ログをブラウザから確認するとか、google spread sheetsにコピペする時とかに使うため。
 <span class="spanExplain">コンテクスト</span>
 <ul>
@@ -11,8 +12,10 @@
 <li>/media/pi/TOSHIBA/data/にcsvデータファイルが入っている
 <li>raspberrypi.garameki.com/data/にブラウザからアクセスするとIndexes表示になる
 </ul>
-<h2>1.cronなどの、USBメモリにアクセスするプロセスを無くしておく</h2>
-<h2>2.パーミッション関係の設定</h2>
+<h2>手順</h2>
+<div class="pp">
+<h3>1.cronなどの、USBメモリにアクセスするプロセスを無くしておく</h3>
+<h3>2.パーミッション関係の設定</h3>
 /media/pi/TOSHIBA/dataをIndexes表示させるために～
 <div class="pp">
 <span class="spanExplain">権限</span>
@@ -44,12 +47,12 @@ $ sudo service apache2 restart
 <pre>
 raspberrypi.garameki.com/data/
 </pre>
-<img src="indexes_in_usb_1.jpg"><br>
 <div>
 
-<h2><span class="spanCaution" style="font-size:25px;">cronのコメントアウトを戻しておく</span></h2>
+<h3>3.<span class="spanCaution" style="font-size:25px;">cronのコメントアウトを戻しておく</span></h3>
 <div class="pp">
 データログの再開
+</div>
 </div>
 
 <h2>Google Spread Sheetsに上げてグラフを描いてみたい</h2>
