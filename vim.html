@@ -1,0 +1,74 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>vimと日本語入力は相性が悪い</h1>
+<div class="pp">
+ふと、vimは最強なのかもしれないが、日本人には向かないのではないかと思ってきた。<br>
+:wをやりたいと思って、実行すると、「：ｗ」が表示されてしまったり、<br>
+1行のみの削除をしたいときに「ｄｄ」と表示されてしまったり、<br>
+空行を開けたいときに「お」と表示されてしまったり、<br>
+いちいちコマンドモードに移動してから、日本語入力を切ってからでないと、思ったことができない。<br>
+<br>
+私はメモ帳出身者なので、コマンドモードとエディットモードの切り替えがとてもうっとおしく思った。<br>
+コマンドモードのコマンドをエディットモードのままで行えればFBです。<br>
+その場合、日本語入力だけをOFFにして、コマンドを入力することになるので、ESCキーと日本語切り替えキーの両方押さなくてもいいことになります。<br>
+<span class="spanExplain">参考サイト</span></div>
+<ul>
+<li><a href="https://cocopon.me/blog/2013/10/vim-map-noremap/">量記事 :【図解Vim】mapとnoremap</a>
+<li><a href="https://qiita.com/Go-zen-chu/items/5464fb6b9e6b38c958bd">vim の マクロ記録、閲覧、削除</a>www
+<li><a href="https://qiita.com/34ro/items/6163f595785ae99a632a">vimのinsert modeの全てのキーマップ一覧</a>
+<li><a href="https://qiita.com/Echos/items/84e87274eef3eeab3b17">vimの挿入モードで一定以上入力がなかったら通常モードにしてみる</a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+
+<h2>vimの設定をいじる</h2>
+<div class="pp">
+<span class="spanExplain">~/.vimrcに追加</span>
+<pre>
+imap <C-w> <ESC><C-w>s:e 
+imap <C-v> <right><ESC><C-v>
+inoremap www <ESC>:w<CR>i
+inoremap qqq <ESC>:q<CR>
+inoremap ooo <ESC>o
+inoremap ddd <ESC>ddi
+inoremap yyy <ESC>yyi
+inoremap ppp <right><ESC>pi
+inoremap uuu <ESC>ui
+inoremap <C-w><C-s> <ESC><C-w>s:e 
+inoremap VVV <ESC>V
+vnoremap d di
+vnoremap y yi
+
+function! Init()
+	call feedkeys("i")
+endfunction
+call Init()
+</pre>
+</div>
+
+<h2>インサートモードでできること</h2>
+<div class="pp">
+最初からインサートモードです。<br>
+注意：<span style="color:yellow;font-size:25px;">ESCキーに触れてはいけません</span>。<br>
+以下のコマンドをやろうとして、「ｗｗｗ」とか出てきたときには<br>
+日本語入力をOFFにして、バックスペースを3回押すのです。
+<table>
+<tr><th>キー</th><th>動作</th></tr>
+<tr><td>Ctrl+w</td><td>画面分割、ファイル名入力待ち</td></tr>
+<tr><td>Ctrl+v</td><td>ヴィジュアル選択（文字）</td></tr>
+<tr><td>VVV</td><td>ヴィジュアル選択（行）</td></tr>
+<tr><td>www</td><td>保存</td></tr>
+<tr><td>qqq</td><td>終了</td></tr>
+<tr><td>ooo</td><td>次の行に空行を挿入、その行の先頭に移動</td></tr>
+<tr><td>ddd</td><td>その1行を削除</td></tr>
+<tr><td>yyy</td><td>その1行をヤンク</td></tr>
+<tr><td>ppp</td><td>ペースト</td></tr>
+<tr><td>uuu</td><td>undo</td></tr>
+</table>
+どうにもならなくなったら、コマンドモードでなんとかしてください。
+</div>
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
