@@ -1,0 +1,112 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="http://raspberrypi.garameki.com/articles/style.css" /><scripti type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<style type="text/css">
+div {
+	padding:20px;
+}
+
+h2 {
+	border-bottom:solid 1px white;
+}
+
+.arg {
+	font-weight:bold;
+}
+
+.round {
+	border:solid 1px white;
+	border-radius:5px;
+}
+
+.dot {
+	border:dotted 2px white;
+}
+
+.solid {
+	border:solid 1px white;
+}
+
+th {
+	border:none;
+}
+
+
+
+</style>
+<title></title>
+</head><body id="body">
+
+
+
+<h1>ベリサイン SSL サーバ証明書取得から apache mod ssl 設定までの流れ</h1>
+ベリサイン【セキュア・サーバID】取得から、apache mod_ssl 設定までの流れ。<br>
+<div class="solid">
+目次 [非表示]<br>
+1 申請手続き<br>
+2 apache mod_ssl の設定<br>
+2.1 中間CA証明書のインストール<br>
+2.2 mod_ssl の設定<br>
+2.3 apache 起動時のパスフレーズ入力を省略する<br>
+3 参考ページ<br>
+4 脚注<br>
+</div>
+<h2>申請手続き</h2>
+申請時に CSR を提出する必要があるので、CSR を生成しておく。<br>
+<div class="dot">
+[shell]# openssl genrsa -des3 2048 > server.key<br>
+[shell]# openssl req -new -key server.key > server.csr<br>
+[shell]# cat server.csr<br>
+</div>
+<br>
+server.csr を申請時に貼り付ける。<br>
+<div class="dot">
+-----BEGIN CERTIFICATE REQUEST----- から<br>
+-----END CERTIFICATE REQUEST----- まで<br>
+</div>
+<br>
+<div class="round">
+	mod_ssl を設定するときに server.key を指定するので保管しておく。また、CSR 作成時の パスフレーズ は後で使うので、覚えておく。
+</div>
+<br>
+申請情報最終確認の電話と入金を済ませる。
+
+<h2>	apache mod_ssl の設定</h2>
+	Secure Server Certificate が送られてくるので、server.crt ファイルとして保存。[1]
+<div class="dot">
+	-----BEGIN CERTIFICATE----- から<br>
+	-----END CERTIFICATE----- まで<br>
+</div>
+<h3>	中間CA証明書のインストール</h3>
+	中間CA証明書を inca.pem ファイルとして保存する。[2]
+<div class="dot">
+	-----BEGIN CERTIFICATE-----<br>
+	セキュア・サーバID 三階層目中間CA証明書<br>
+	-----END CERTIFICATE-----<br>
+	-----BEGIN CERTIFICATE-----<br>
+	二階層目中間CA証明書（製品共通）<br>
+	-----END CERTIFICATE-----<br>
+</div>
+<h3>	mod_ssl の設定</h3>
+	server.crt, server.key, inca.pem を各ディレクティブで指定する。
+<div class="dot">
+	SSLCertificateFile       /path/to/server.crt<br>
+	SSLCertificateKeyFile    /path/to/server.key<br>
+	SSLCertificateChainFile  /path/to/inca.pem<br>
+</div>
+<h3>apache 起動時のパスフレーズ入力を省略する</h3>
+	apache を起動するたびに パスフレーズ の入力を求められるので、パスフレーズを解除する。
+<div class="dot">
+	[shell]# mv server.key server.key.back<br>
+	[shell]# openssl rsa -in server.key.back > server.key<br>
+	Enter pass phrase for server.key.back:パスフレーズ<br>
+	writing RSA key<br>
+</div>
+<br>
+<br>
+これで完成。
+
+	参考ページ
+	サーバIDのインストール
+
+
+<br><hr><div style="text-align:right;"><a href="http://garameki.com">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
