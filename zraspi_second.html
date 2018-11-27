@@ -1,0 +1,110 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>ラズパイ2台目</h1>
+<div class="pp">
+ラズパイが思いのほか面白いので、２代目を購入。名前はまだ付けていない。<br>
+今回は筐体とファンがついている奴を買った。<br>
+<img src="raspi_second_1.jpg">
+</div>
+<h2>SDカードのフォーマット : 15分</h2>
+<div class="pp">
+SDカードフォーマッターで16GByteのSDカードを上書き。<br>
+ボリュームラベルは「RASPI2」にした。<br>
+</div>
+<h2>NOOBSをSDカードにコピー : 2分</h2>
+<div class="pp">
+Noobsは2か月前のやつがwindowsにあるので、それを丸コピー<br>
+<a href="https://www.raspberrypi.org/downloads/noobs/">Raspberry Pi Organization : DOWNLOAD</a><br>
+上のサイトをみたら、バージョンが3.0.0になっていた。<br>
+</div>
+
+<h2>Raspbianをインストール : 35分</h2>
+<div class="pp">
+
+</div>
+
+<h2>日本語環境をインストール</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get -y install ibus-mozc</pre>
+</div>
+
+<h2>アップグレード : 1時間53分</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get upgrade
+</pre>
+やけにwpasupplicantというのが長い。どうやらwifiをあやつるものらしいのだけど。<br>
+wolf workが関係しているらしいのだけど、かれこれこれだけで、10分以上やっている。<br>
+</div>
+
+<h2>.bash</h2>
+<div class="pp">
+.bashと.bash_aliasesをgithubからwgetします。
+</div>
+
+<h2>vimをインストール</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get -y install vim
+</pre>
+githubから、.vimrcをwidgetします。</div>
+
+
+<h2>I2CとSPIをON</h2>
+<div class="pp">
+<span class="spanExplain">/boot/config.txt</span>
+<pre>
+dtparam=i2c_arm=on
+#dtparam=i2s=on
+dtparam=spi=on</pre>
+のように、i2cとspiのコメントアウトをはずして、
+<pre>
+$ sudo reboot
+</pre>
+[applications menu]→[設定]→[Raspberry Piの設定]→[インターフェイス]と進むと、SPIとI2Cが「有効」になっているのが確認できます。
+</div>
+
+
+<h2>gitの設定</h2>
+<div class="pp">
+gitコマンドはRaspberry Pi3B+では、インストール済です。<br>
+<pre>
+$ cd
+$ ssh-keygen
+Enter file in which to save the key (/home/pi/.ssh/id_rsa): /home/pi/.ssh/id_rsa
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+$ chmod 440 ~/.ssh/id_rsa.pub
+$ chmod 400 ~/.ssh/id_rsa
+</pre>
+そしたら、<span style="font-size:20px;color:yellow;">id_rsa.pub</span>の方をgithubのsshとしてコピペします<br>
+コピペ時にはマウスを使うと思いますが、そのときに、マウスの右クリックで、vimはヴィジュアルモードになってしまって、うまくできません。そのときには「:set mouse=」と入力して、マウスの影響を受けないようにします。<br>
+</div>
+
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+
+
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>

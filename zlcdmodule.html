@@ -1,0 +1,91 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="LCDモジュールを使う">
+<title>LCDモジュールを使う|がらめきドットコム</title>
+</head><body id="body">
+<h1>LCDモジュールを使う</h1>
+<img src="lcdmodule_1.jpg">
+秋月電子通商さんから「I2Cインターフェイスタイプ 16文字x2行LCDモジュール バックライト付き ACM1602N1-FLW-FBW」を買った。
+<h2>接続</h2>
+<div class="pp">
+<table>
+<tr><th>モジュール</th><th>可変抵抗</th><th>GPIO</th></tr>
+<tr><td>1.VSS</td>	<td></td>		<td>Ground</td></tr>
+<tr><td>2.VDD</td>	<td></td>		<td>3V3</td></tr>
+<tr><td>3.V0</td>	<td>中央端子</td>	<td></td></tr>
+<tr><td>4.SLC</td>	<td></td>		<td>BCM3</td></tr>
+<tr><td>5.SDA</td>	<td></td>		<td>BCM2</td></tr>
+<tr><td>6.BL+</td>	<td></td>		<td>3V3</td></tr>
+<tr><td>7.BL-</td>	<td></td>		<td>Ground</td></tr>
+<tr><td></td><td>右端子</td><td>Ground</td></tr>
+<tr><td></td><td>左端子</td><td>V3V</td></tr>
+</table>
+※可変抵抗の左右の端子は入れ替え可能
+</div>
+
+
+<h2>説明書の説明 7.0.3 I2C Interface protocol:</h2>
+<div class="pp">
+<h3>プロトコル</h3>
+<div class="pp">
+大雑把に言うと<br>
+(SLAVE ADDRESS) + (CONTROL BYTE) + (COMMAND または DATA BYTE)
+という構成。<br>
+</div>
+<h3>SLAVE ADDRESS</h3>
+<div class="pp">
+7-bit スレーブアドレスは1010000つまり0x50です
+</div>
+<h3>CONTROL BYTE</h3>
+<div class="pp">
+0x00または0x80の二つしかありません<br>
+0x00のとき、次に来るのはCOMMANDです。<br>
+0x80のとき、次に来るのはDATA BYTEです。<br>
+</div>
+<h3>COMMAND</h3>
+<div class="pp">
+説明書の「11.0 DISPLAY INSTRUCTION TABLE AND DDRAM ADDRESS」に書いてあります。<br>
+大雑把に紹介
+<table>
+<tr><th>コマンド名</th><th>COMMAND</th><th>働き</th></tr>
+<tr><td rowspan="1">Clear Display</td><td>0x01</td><td>すべてに空白を書き込み、1行目の先頭に行く</td></tr>
+<tr><td rowspan="1">Return Home</td><td>0x02</td><td>1行目の先頭に行く</td></tr>
+<tr><td rowspan="4">Entry Mode Set</td><td>0x04</td><td>文字を書き込んだ後、カーソルは左に移動</td></tr>
+<tr><></td><td>0x06</td><td>文字を書き込んだ後、カーソルは右に移動</td></tr>
+<tr><td>0x05</td><td>文字を書き込んだ後、カーソルは動かずに、1行目と2行目の文字すべてが右にシフト</td></tr>
+<tr><td>0x07</td><td>文字を書き込んだ後、カーソルは動かずに、1行目と2行目の文字すべてが左にシフト</td></tr>
+<tr><td rowspan="3">Display ON/<br>OFF Control</td><td>0x0C</td><td>カーソルは見えないが文字は表示される</td></tr>
+<tr><td>0x08</td><td>カーソルも文字も見えない</td></tr>
+<tr><td>0x0D～0x0F</td><td>カーソルが見えたり見えなかったり、点滅したりしなかったり。文字は表示される</td></tr>
+<tr><td rowspan="4">Cursor or<br>Display Shift</td><td>0x18</td><td>カーソルとともに全部の文字が左にシフト</td></tr>
+<tr><td>0x1C</td><td>カーソルとともに全部の文字が右にシフト</td></tr>
+<tr><td>0x14</td><td>カーソルだけが右に移動</td></tr>
+<tr><td>0x10</td><td>カーソルだけが左に移動</td></tr>
+<tr><td rowspan="1">Function Set</td><td>0x38</td><td>これはこの値のみ可能。</td></tr>
+<tr><td rowspan="1">Set DDRAM<br>ADDRESS</td><td>0x80～0x8F<br>または<br>0x60～0x6F</td><td>カーソルをその位置にジャンプ</td></tr>
+</table>
+</div>
+<h3>DATA BYTE</h3>
+<div class="pp">
+説明書の「12.0 STANDARD CHARACTER PATTERNS」に書いてあります。<br>
+例えば、大文字のZならば、縦が0101、横がxxxx1010なので、01011010、つまり、0x5Aが大文字Zを表すBYTE DATAです。
+</div>
+</div>
+
+
+<h2>シェルによる表示</h2>
+<div class="pp">
+
+<span class="spanExplain">例</span>
+<pre>
+</pre>
+</div>
+
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
