@@ -6,6 +6,20 @@
 <h1>LCDモジュールを使う</h1>
 <img src="lcdmodule_1.jpg">
 秋月電子通商さんから「I2Cインターフェイスタイプ 16文字x2行LCDモジュール バックライト付き ACM1602N1-FLW-FBW」を買った。
+<h2>I2Cの準備</h2>
+<div class="pp">
+<span class="spanExplain">/boot/config.txt</span>
+<pre>
+dtparam=i2c=on
+</pre>
+を挿入したあとに
+<pre>
+$ sudo reboot
+</pre>
+
+
+</div>
+
 <h2>接続</h2>
 <div class="pp">
 <table>
@@ -75,6 +89,10 @@
 
 <h2>シェルによる表示</h2>
 <div class="pp">
+特に何かをインストール必要はありませんでした。<br>
+シェルから、次のように打ち込むと、表示できます。<br>
+lcd.shという名前で保存して、chmod 700 lcd.shとしてから、./lcd.shで、まとめて実行できます。<br>
+このページの最初の写真のようになります。<br>
 
 <span class="spanExplain">例</span>
 <pre>

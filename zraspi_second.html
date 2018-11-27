@@ -86,12 +86,29 @@ $ chmod 400 ~/.ssh/id_rsa
 </div>
 
 
-<h2></h2>
+<h2>gitを使うとき</h2>
 <div class="pp">
+<pre>
+$ git init
+$ git config --global user.email "us**************@*****.***"
+$ git config --global user.name "***** *********"
+としておかないと、「Who are you?」みたいになり、git commitできない。<br>
 </div>
 
-<h2></h2>
+<h2>sudo を使う</h2>
 <div class="pp">
+<ul>
+<li><a href="https://bellett.moe.hm/index.php/2017/12/13/raspberry-pi-stretch-pi-sudo/">参考 piをsudoユーザーから外す</a>
+</ul>
+上記の参考サイトの逆をやれば、sudoを使えるようになります。<br>
+<span class="spanExplain">まずはパスワードの設定</span>
+<pre>
+$ sudo passwd root
+新しいUNIXパスワードを入力してください:
+新しいUNIXパスワードを再入力してください:
+passwd: パスワードは正しく更新されました
+</pre>
+ユーザーpiは、UNIXパスワードを設定すれば、sudo 使い放題。
 </div>
 
 <h2></h2>
