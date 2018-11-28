@@ -40,17 +40,13 @@ $ sudo apt-get upgrade
 wolf workが関係しているらしいのだけど、かれこれこれだけで、10分以上やっている。<br>
 </div>
 
-<h2>.bash</h2>
-<div class="pp">
-.bashと.bash_aliasesをgithubからwgetします。
-</div>
 
 <h2>vimをインストール</h2>
 <div class="pp">
 <pre>
 $ sudo apt-get -y install vim
 </pre>
-githubから、.vimrcをwidgetします。</div>
+</div>
 
 
 <h2>I2CとSPIをON</h2>
@@ -270,6 +266,7 @@ sudo cp -rpv $USBBACK/etc/ssl/* /etc/ssl/
 sudo mkdir -p /etc/letsencrypt
 sudo cp -rpv $USBBACK/etc/letsencrypt/* /etc/letsencrypt/
 </pre>
+<span style="font-size:20px;color:gold;">ここで注意しなければならないのは、/etc/sslフォルダを先祖のものに塗り替えてしまうといことは、前の操作で、githubのkeygenで生成した鍵は、意味ないじゃんということになる。</span>
 </div>
 
 
