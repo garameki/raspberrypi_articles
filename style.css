@@ -1,18 +1,31 @@
 body {
 }
 #body {
-	color:#a0a0a0;
+	color:#e0e0e0;
 	background-color:black;
 	margin:20px;
 	padding-left:10px;
 }
+h1 {
+	margin-left:0px;
+	border-left:solid 4px blue;
+	padding-left:10px;
+
+}
 h2 {
 	margin-left:0px;
-	border-left:solid 4px white;
+	border-left:solid 4px skyblue;
+	padding-left:10px;
+}
+h3 {
+	margin-left:0px;
+	border-left:solid 4px peru;
 	padding-left:10px;
 }
 h3.section {
+	border-left:solid 0px;
 	margin-bottom:0px;
+	padding-left:0px;
 }
 p {
 	margin-left:25px;

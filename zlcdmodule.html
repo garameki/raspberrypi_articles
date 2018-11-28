@@ -6,6 +6,13 @@
 <h1>LCDモジュールを使う</h1>
 <img src="lcdmodule_1.jpg">
 秋月電子通商さんから「I2Cインターフェイスタイプ 16文字x2行LCDモジュール バックライト付き ACM1602N1-FLW-FBW」を買った。
+<h2>パーツ</h2>
+<div class="pp">
+<ul>
+<li>ACM1602N1-FLW-FBW
+<li>可変抵抗器10kΩ
+</ul>
+</div>
 <h2>I2Cの準備</h2>
 <div class="pp">
 <span class="spanExplain">/boot/config.txt</span>
@@ -76,13 +83,22 @@ $ sudo reboot
 <tr><td>0x14</td><td>カーソルだけが右に移動</td></tr>
 <tr><td>0x10</td><td>カーソルだけが左に移動</td></tr>
 <tr><td rowspan="1">Function Set</td><td>0x38</td><td>これはこの値のみ可能。</td></tr>
-<tr><td rowspan="1">Set DDRAM<br>ADDRESS</td><td>0x80～0x8F<br>または<br>0x60～0x6F</td><td>カーソルをその位置にジャンプ</td></tr>
+<tr><td rowspan="1">Set DDRAM<br>ADDRESS</td><td>0x80～0x8F<br>または<br>0xC0～0xCF</td><td>カーソルをその位置にジャンプ</td></tr>
 </table>
 </div>
 <h3>DATA BYTE</h3>
 <div class="pp">
 説明書の「12.0 STANDARD CHARACTER PATTERNS」に書いてあります。<br>
 例えば、大文字のZならば、縦が0101、横がxxxx1010なので、01011010、つまり、0x5Aが大文字Zを表すBYTE DATAです。
+</div>
+<h3>DDRAM ADDRESS</h3>
+<div class="pp">
+文字を表示する場所を示す。コマンド「Set DDRAM Address」で、カーソルを任意の位置に移動させることができる。<br>
+<table>
+<tr><th>位置</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th><th>12</th><th>13</th><th>14</th><th>15</th><th>16</th></tr>
+<tr><td>1行目</td><td>0x80</td><td>0x81</td><td>0x82</td><td>0x83</td><td>0x84</td><td>0x85</td><td>0x86</td><td>0x87</td><td>0x88</td><td>0x89</td><td>0x8A</td><td>0x8B</td><td>0x8C</td><td>0x8D</td><td>0x8E</td><td>0x8F</td></tr>
+<tr><td>2行目</td><td>0xC0</td><td>0xC1</td><td>0xC2</td><td>0xC3</td><td>0xC4</td><td>0xC5</td><td>0xC6</td><td>0xC7</td><td>0xC8</td><td>0xC9</td><td>0xCA</td><td>0xCB</td><td>0xCC</td><td>0xCD</td><td>0xCE</td><td>0xCF</td></tr>
+</table>
 </div>
 </div>
 

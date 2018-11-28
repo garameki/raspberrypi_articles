@@ -8,7 +8,6 @@
 ラズパイが思いのほか面白いので、２代目を購入。名前はまだ付けていない。<br>
 今回は筐体とファンがついている奴を買った。<br>
 <img src="raspi_second_1.jpg">
-</div>
 <h2>SDカードのフォーマット : 15分</h2>
 <div class="pp">
 SDカードフォーマッターで16GByteのSDカードを上書き。<br>
@@ -72,7 +71,9 @@ $ sudo reboot
 <h2>gitの設定</h2>
 <div class="pp">
 gitコマンドはRaspberry Pi3B+では、インストール済です。<br>
-<pre>
+	<h3>sshの設定</h3>
+	<div class="pp">
+	<pre>
 $ cd
 $ ssh-keygen
 Enter file in which to save the key (/home/pi/.ssh/id_rsa): /home/pi/.ssh/id_rsa
@@ -80,20 +81,41 @@ Enter passphrase (empty for no passphrase):
 Enter same passphrase again:
 $ chmod 440 ~/.ssh/id_rsa.pub
 $ chmod 400 ~/.ssh/id_rsa
-</pre>
-そしたら、<span style="font-size:20px;color:yellow;">id_rsa.pub</span>の方をgithubのsshとしてコピペします<br>
-コピペ時にはマウスを使うと思いますが、そのときに、マウスの右クリックで、vimはヴィジュアルモードになってしまって、うまくできません。そのときには「:set mouse=」と入力して、マウスの影響を受けないようにします。<br>
-</div>
-
-
-<h2>gitを使うとき</h2>
-<div class="pp">
-<pre>
+	</pre>
+	そしたら、<span style="font-size:20px;color:yellow;">id_rsa.pub</span>の方をgithubのsshとしてコピペします<br>
+	コピペ時にはマウスを使うと思いますが、そのときに、マウスの右クリックで、vimはヴィジュアルモードになってしまって、うまくできません。そのときには「:set mouse=」と入力して、マウスの影響を受けないようにします。<br>
+	</div>
+	<h3>gitを使うとき</h3>
+	<div class="pp">
+	<pre>
 $ git init
 $ git config --global user.email "us**************@*****.***"
 $ git config --global user.name "***** *********"
-としておかないと、「Who are you?」みたいになり、git commitできない。<br>
+	</pre>
+	としておかないと、「Who are you?」みたいになり、git commitできない。<br>
+	</div>
+	<h3>コマンドプロンプトにgitのブランチを表示させる</h3>
+	<div class="pp">
+	<span class="spanExplain">以下を~/.bashrcに追加</span>
+	<pre>
+# source code is from "https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d
+# Show git branch name
+force_color_prompt=yes
+color_prompt=yes
+parse_git_branch() {
+ git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+if [ "$color_prompt" = yes ]; then
+ PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\]\n\$ '
+else
+ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(parse_git_branch)\n\$ '
+fi
+unset color_prompt force_color_prompt
+	</pre>
+	</div>
 </div>
+
+
 
 <h2>sudo を使う</h2>
 <div class="pp">
@@ -111,8 +133,14 @@ passwd: パスワードは正しく更新されました
 ユーザーpiは、UNIXパスワードを設定すれば、sudo 使い放題。
 </div>
 
-<h2></h2>
+<h2>local netwokのhttpに接続</h2>
 <div class="pp">
+<span class="spanExplain">/etx/hosts</span>
+<pre>
+192.168.3.6　raspberrypi.garameki.com
+192.168.3.6  garameki.com
+</pre>
+を追加
 </div>
 
 <h2></h2>
@@ -124,4 +152,5 @@ passwd: パスワードは正しく更新されました
 
 
 
+</div>
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
