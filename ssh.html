@@ -1,0 +1,74 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="SSHで遠隔操作">
+<title>SSHで遠隔操作|がらめきドットコム</title>
+</head><body id="body">
+<h1>SSHで遠隔操作</h1>
+ラズパイが増えていくと、モニターとか、切り替えとが、つらくなることが予想されるので、Windowsマシンから、遠隔操作することにした。<br>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li>SSHには設定ファイルというものが利用できる : <a href="http://hylom.net/2010/08/25/ssh-multiple-conection/">あまり知られてない（ような気がする）sshの多重接続</a>
+</ul>
+<h2>SSHを有効にする</h2>
+<div class="pp">
+<pre>
+$ sudo raspi-config
+</pre>
+で、SSHを有効にしてから&lt;FINISH&gt;で終了。rebootする必要なし。<br>
+.sshをつくって、その中に
+<pre>
+$ ssh-genkey
+</pre>
+で、公開鍵と暗号カギを生成した後に
+<pre>
+$ chmod 400 id_rsa
+$ chmod 444 id_rsa.pub
+</pre>
+しておく
+</div>
+<h2>実行</h2>
+<div class="pp">
+Windowsのコンソールから、
+<pre>
+$ ssh pi@192.168.3.8
+</pre>
+として、rsaキーの製作時にいれたパスワードを入力すれば、OK
+<pre>
+C:\Users\usaku&gt;<span class="spanCaution">ssh pi@192.168.3.8</span>
+The authenticity of host '192.168.3.8 (192.168.3.8)' can't be established.
+ECDSA key fingerprint is SHA256:QQZx8J3shugd+Nj2BQMZ09RIhFad3f5xQeMSo7ERgzg.
+Are you sure you want to continue connecting (yes/no)? <span class="spanCaution">y</span>
+Please type 'yes' or 'no': <span class="spanCaution">yes</span>
+Warning: Permanently added '192.168.3.8' (ECDSA) to the list of known hosts.
+pi@192.168.3.8's password:<span class="spanCaution">***********</span>
+Permission denied, please try again.
+pi@192.168.3.8's password:<span class="spanCaution">************</span>
+Linux raspberrypi 4.14.79-v7+ #1159 SMP Sun Nov 4 17:50:20 GMT 2018 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Tue Nov 27 12:16:33 2018
+pi@raspberrypi:~
+$ <span class="spanCaution">ls</span>
+2018-11-28-091126_1184x624_scrot.png  backup.sh     git     oldconffiles  python_games  ダウンロード  デスクトップ  ビデオ  画像
+MagPi                                 frontdown.sh  lcd.sh  public        www           テンプレート  ドキュメント  音楽    公開
+pi@raspberrypi:~
+$
+</pre>
+</div>
+
+全く同じように使える。<br>
+複数のプロセスを実行するにはどうすればいいのだろうか？<br>
+もう一度sshするといいかもしれないな。<br>
+<br>
+それと、sshには~/.ssh/configに設定を入れておけるらしい。<br>
+<br>
+あと、WANにポート22番をあければ、WAN側から遠隔操作できるのね。<br>
+<br>
+以上
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181129">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
