@@ -1,8 +1,15 @@
 <html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><scripti type="application/javascript" src="script.js"></script>
-<meta name="description" content="">
-<title></title>
+<meta name="description" content="割り込み処理。早くなくていいから、割り込み処理をしたい。GPIOをcheckして、max31856が!FAULTを下げたら、resetを実行するようにしたい。">
+<title>GPIOによる割り込み処理|がらめきドットコム</title>
 </head><body id="body">
-
+<h1>割り込み処理</h1>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://team-ebi.com/arc/290">GPIO入力を割り込み信号として最速応答速度（最小遅延）でアプリ利用</a>
+<li><a href="https://team-ebi.com/wp-content/uploads/2017/09/gpiisig.c">gpiisig : GPIO Interrupt signal driver</a>
+</ul>
+早くなくていいから、GPIOの変化で割り込み処理をする。<br>
+具体的にはmax31856が<span style="border-top:1px solid white ;padding-top:3px;">FAULT</span>を下げたら、リセットするスクリプトを実行するようにする。
 <h2>割り込み</h2>
 <ul>
 <li><a href="http://www.raspberrypirulo.net/entry/2016/10/16/%E5%89%B2%E3%82%8A%E8%BE%BC%E3%81%BF%E3%81%AE%E4%BD%BF%E3%81%84%E6%96%B9">割り込みの使い方</a>
