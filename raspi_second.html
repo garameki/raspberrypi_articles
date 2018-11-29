@@ -1,0 +1,298 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="">
+<title></title>
+</head><body id="body">
+<h1>ラズパイ2台目</h1>
+<div class="pp">
+ラズパイが思いのほか面白いので、２代目を購入。名前はまだ付けていない。<br>
+今回は筐体とファンがついている奴を買った。<br>
+<img src="raspi_second_1.jpg">
+<h2>SDカードのフォーマット : 15分</h2>
+<div class="pp">
+SDカードフォーマッターで16GByteのSDカードを上書き。<br>
+ボリュームラベルは「RASPI2」にした。<br>
+</div>
+<h2>NOOBSをSDカードにコピー : 2分</h2>
+<div class="pp">
+Noobsは2か月前のやつがwindowsにあるので、それを丸コピー<br>
+<a href="https://www.raspberrypi.org/downloads/noobs/">Raspberry Pi Organization : DOWNLOAD</a><br>
+上のサイトをみたら、バージョンが3.0.0になっていた。<br>
+</div>
+
+<h2>Raspbianをインストール : 35分</h2>
+<div class="pp">
+
+</div>
+
+<h2>日本語環境をインストール</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get -y install ibus-mozc</pre>
+</div>
+
+<h2>アップグレード : 1時間53分</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get upgrade
+</pre>
+やけにwpasupplicantというのが長い。どうやらwifiをあやつるものらしいのだけど。<br>
+wolf workが関係しているらしいのだけど、かれこれこれだけで、10分以上やっている。<br>
+</div>
+
+
+<h2>vimをインストール</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get -y install vim
+</pre>
+</div>
+
+
+<h2>I2CとSPIをON</h2>
+<div class="pp">
+<span class="spanExplain">/boot/config.txt</span>
+<pre>
+dtparam=i2c_arm=on
+#dtparam=i2s=on
+dtparam=spi=on</pre>
+のように、i2cとspiのコメントアウトをはずして、
+<pre>
+$ sudo reboot
+</pre>
+[applications menu]→[設定]→[Raspberry Piの設定]→[インターフェイス]と進むと、SPIとI2Cが「有効」になっているのが確認できます。
+</div>
+
+
+<h2>gitの設定</h2>
+<div class="pp">
+gitコマンドはRaspberry Pi3B+では、インストール済です。<br>
+	<h3>sshの設定</h3>
+	<div class="pp">
+	<pre>
+$ cd
+$ ssh-keygen
+Enter file in which to save the key (/home/pi/.ssh/id_rsa): /home/pi/.ssh/id_rsa
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+$ chmod 440 ~/.ssh/id_rsa.pub
+$ chmod 400 ~/.ssh/id_rsa
+	</pre>
+	そしたら、<span style="font-size:20px;color:yellow;">id_rsa.pub</span>の方をgithubのsshとしてコピペします<br>
+	コピペ時にはマウスを使うと思いますが、そのときに、マウスの右クリックで、vimはヴィジュアルモードになってしまって、うまくできません。そのときには「:set mouse=」と入力して、マウスの影響を受けないようにします。<br>
+	</div>
+	<h3>gitを使うとき</h3>
+	<div class="pp">
+	<pre>
+$ git init
+$ git config --global user.email "us**************@*****.***"
+$ git config --global user.name "***** *********"
+	</pre>
+	としておかないと、「Who are you?」みたいになり、git commitできない。<br>
+	</div>
+	<h3>コマンドプロンプトにgitのブランチを表示させる</h3>
+	<div class="pp">
+	<span class="spanExplain">以下を~/.bashrcに追加</span>
+	<pre>
+# source code is from "https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d
+# Show git branch name
+force_color_prompt=yes
+color_prompt=yes
+parse_git_branch() {
+ git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+if [ "$color_prompt" = yes ]; then
+ PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\]\n\$ '
+else
+ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(parse_git_branch)\n\$ '
+fi
+unset color_prompt force_color_prompt
+	</pre>
+	</div>
+</div>
+
+
+
+<h2>sudo を使う</h2>
+<div class="pp">
+<ul>
+<li><a href="https://bellett.moe.hm/index.php/2017/12/13/raspberry-pi-stretch-pi-sudo/">参考 piをsudoユーザーから外す</a>
+</ul>
+上記の参考サイトの逆をやれば、sudoを使えるようになります。<br>
+<span class="spanExplain">まずはパスワードの設定</span>
+<pre>
+$ sudo passwd root
+新しいUNIXパスワードを入力してください:
+新しいUNIXパスワードを再入力してください:
+passwd: パスワードは正しく更新されました
+</pre>
+ユーザーpiは、UNIXパスワードを設定すれば、sudo 使い放題。
+</div>
+
+<h2>local netwokのhttpに接続</h2>
+<div class="pp">
+<span class="spanExplain">/etx/hosts</span>
+<pre>
+192.168.3.6　raspberrypi.garameki.com
+192.168.3.6  garameki.com
+</pre>
+を追加
+</div>
+
+<h2>USBメモリを買う</h2>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://vivibit.net/pib-raspbian/#USB-2">【ラズパイ】Raspberry Pi B+にRaspbianをインストール！USBメモリ、Wifiドングル設定</a>
+</ul>
+買ったUSBメモリはパーティションを一旦すべて削除して、プライマリパーティションだけ作成する。<br>
+つぎにext4でフォーマット<br>
+次にe2labelでUSBメモリのラベルを使いやすい名前に変更（この名前が/media/pi/****となる）<br>
+unmountした後に、再接続で、自動認識されていればOK<br>
+それを再びunmount<br>
+先祖ラズパイに接続してコピーをとる。
+</div>
+
+<h2>USBメモリに、rsync</h2>
+<div class="pp">
+フォーマットが済んだUSBメモリを先祖ラズパイに挿す。<br>
+~/にあるbackup.sh内のpathをUSBメモリへのパス名に変更(path="/media/pi/TOSHIBA"→path="/media/pi/SONY"など)<br>
+sudo ./backup.shを実行する<br>
+umountする。<br>
+次は、このUSBメモリを新しいラズパイに挿す。
+</div>
+
+<h2>いくつかをfrontdownする</h2>
+<div class="pp">
+<span class="spanExplain">~/frontdown.shの新規作成</span>
+<pre>
+sudo rsync -av /media/pi/SONY/backup1/pi/backup.sh /home/pi
+sudo rsync -av /media/pi/SONY/backup1/pi/.vimrc /home/pi
+sudo rsync -av /media/pi/SONY/backup1/pi/.bashrc /home/pi
+sudo rsync -av /media/pi/SONY/backup1/pi/.bash_aliases /home/pi
+</pre>
+<span class="spanExplain">実行</span>
+<pre>
+$ cd ~
+$ chmod 700 frontdown.sh
+$ sudo ./frontdown.sh
+$ source .bashrc
+$ source .bash_aliases
+</pre>
+</div>
+
+
+
+
+<h2>Apache2のインストール</h2>
+<div class="pp">
+<pre>
+$ sudo apt-get install apache2
+</pre>
+</div>
+
+
+<h2>ルーターの設定を変更して、WANからの80番ポートへのリクエストを新しいラズパイに送る</h2>
+<div class="pp">
+<span class="spanExplain">WiFiボードの物理アドレスを取得する</span>
+<pre>
+$ ifconfig
+</pre>
+wlan0:がWiFiです。eth0は、有線です。<br>
+ブラウザで172.16.255.254(状況で異なる)を入力して、設定画面にログインする<br>
+ポート転送と、物理アドレスに対するローカルIPアドレスの設定をします。<br>
+(先祖のラズパイへの80番の転送を新しいラズパイにしたりします。)<br>
+ルーターが再起動したら、ラズパイを
+<pre>
+$ sudo reboot
+</pre>
+して、新たに設定したローカルIPアドレスをもらいます。
+</div>
+
+
+<h2>/etc/apache2のファイルたちをUSBメモリからのものに置き換える</h2>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="http://ext.omo3.com/mac/hdd_backup_cp_ditto_rsync.html">cp ditto rsyncコマンドで外付けハードディスクにコピーする</a>
+</ul>
+<span class="spanExplain">~/frontdown.shへの追加</span>
+<pre>
+sudo cp -prv /media/pi/SONY/backup1/etc/apache2/* /etc/apache2/
+</pre>
+<span class="spanExplain">実行</span>
+<pre>
+$ sudo ~/frontdown.sh
+</pre>
+シンボリックリンクも全てコピーしてくれるらしい。<br>
+ということは、a2dissiteとかa2ensiteとか、やらないで済む。<br>
+<span class="spanExplain">すぐApache2が起動できる</span>
+<pre>
+$ sudo service apache2 start
+$ systemctl status apache2.service
+</pre>
+</div>
+
+<h2>/etc/hostsを変更する</h2>
+<div class="pp">
+ローカルで、いままで先祖のラズパイだったローカルIPアドレスを変更する<br>
+Windowsの場合は、メモ帳を管理者権限で開いた後に、/windows/system32/drivers/etc/hostsを開く
+<span class="spanExplain">修正</span>
+<pre>
+192.168.3.8	garameki.com
+192.168.3.8	raspberrypi.garameki.com
+</pre>
+ここのIPアドレスは、ルーターで物理アドレスに割り振ったものを使う<br>
+ラズパイたちは/etc/hostsを変更
+</div>
+
+
+<h2>httpサーバーのコンテンツをUSBメモリからコピー</h2>
+<div class="pp">
+<span class="spanExplain">~/frontdown.shに追加</span>
+<pre>
+sudo mkdir -p /home/pi/www
+sudo cp -rpv /media/pi/SONY/backup1/pi/www/* /home/pi/www/
+</pre>
+Gitの設定もそのままコピーされます。<br>
+</div>
+
+
+<h2>sslの関係もコピーしないとhttpsが使えなくてapahce2が立ち上がらない</h2>
+<div class="pp">
+<pre>
+sudo mkdir -p /etc/ssl
+sudo cp -rpv $USBBACK/etc/ssl/* /etc/ssl/
+sudo mkdir -p /etc/letsencrypt
+sudo cp -rpv $USBBACK/etc/letsencrypt/* /etc/letsencrypt/
+</pre>
+<span style="font-size:20px;color:gold;">ここで注意しなければならないのは、/etc/sslフォルダを先祖のものに塗り替えてしまうといことは、前の操作で、githubのkeygenで生成した鍵は、意味ないじゃんということになる。</span>
+</div>
+
+
+<h2>Aache2の立上げ</h2>
+<div class="pp">
+<pre>
+$ sudo service apache2 start
+</pre>
+もし、立ち上がらないようだったら、<br>
+<ol>
+<li>/etc/hostsで変な設定をしていないか確かめる
+<li>journalctl -xe してみる
+<li>systemctl status apache2.service してみる
+<li>ping raspberrypi.garameki.com で、名前解決後のIPアドレスを確認する
+<li>/var/log/apache2 のログを見てみる
+</ol>
+</div>
+
+
+<h2>ブラウザでも確認する</h2>
+<div class="pp">
+もし、外部から接続できる端末(スマホ)があれば、raspberrypi.garameki.com が見られるか試す。<br>
+</div>
+
+<span style="color:gold;font-size:25px;">一応ここまでで、新しいラズパイ上にApache2によるHTTPサーバーの出来上がりである。</span>
+
+
+</div>
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
