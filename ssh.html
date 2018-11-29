@@ -62,13 +62,31 @@ $
 </div>
 
 全く同じように使える。<br>
-複数のプロセスを実行するにはどうすればいいのだろうか？<br>
-もう一度sshするといいかもしれないな。<br>
-<br>
-それと、sshには~/.ssh/configに設定を入れておけるらしい。<br>
+
+<h2>複数のプロセスを実行</h2>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://www.codereading.com/nb/ignore-the-hangup-signal.html">SSHでログアウトしてもバックグラウンド ジョブを継続する方法</a>
+</ul>
+<span class="spanExplain">Usage</span>
+<pre>
+$ nohup COMMAND [ARGS] &gt; 標準出力ファイル &gt; エラー出力ファイル &lt; /dev/null &amp;
+</pre>
+ここで/dev/nullは標準入力から、なにも与えないように使っています。
+<span class="spanExplain">具体例</span>
+<pre>
+$ nohup python3 ht16k33.py 2 &gt; out.txt &gt; err.txt &lt; /dev/null &amp;
+</pre>
+これで、ホスト側のパソコンから、ログアウトしたり、スリープになっても大丈夫です。<br>
+ただし、プロセスを終了するにはpsコマンドでIDを調べて、killコマンドでkill IDとしなくてはなりません。
+</div>
+<br><br>
+sshには~/.ssh/configに設定を入れておけるらしい。<br>
 <br>
 あと、WANにポート22番をあければ、WAN側から遠隔操作できるのね。<br>
 <br>
 以上
+
 
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181129">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
