@@ -330,7 +330,27 @@ backup1  data  <span class="spanGreen" style="font-size:25px;">git</span>  lost+
 pi@raspberrypi:/media/pi/SONY
 
 </pre>
-バックアップできた。
+バックアップできた。<br>
+しかし、非同期なので、ラズパイがクラッシュしたときは大変。<br>
+なのでcronで1分ごとにバックアップを取ることにした。<br>
+<pre>
+pi@raspberrypi:/media/pi/SONY/git/testRepo.git
+$ <span class="spanCaution">crontab -e</span>
+no crontab for pi - using an empty one
+
+Select an editor.  To change later, run 'select-editor'.
+  1. /bin/ed
+  2. /bin/nano        <---- easiest
+  3. /usr/bin/vim.basic
+  4. /usr/bin/vim.tiny
+
+Choose 1-4 [2]: <span class="spanCaution">3</span>
+</pre>
+以下を挿入
+<pre>
+*/1 * * * * sudo /home/pi/backup.sh
+</pre>
+<br><br>
 
 
 <span class="spanExplain">Windowsから確認する</span>
