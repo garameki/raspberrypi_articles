@@ -4,7 +4,7 @@
 <title>Gitサーバーを立てる|がらめきドットコム</title>
 </head><body id="body">
 <h1>Gitサーバーを立てる</h1>
-WANには接続できるようにして、しかも、ドメインネームを伏せておけば、なんちゃってプライベートGitHubならぬGitPrivateHubの出来上がり。
+WANには接続できるようにして、しかも、ドメインネームを伏せておけば、なんちゃってプライベートGitHubならぬGitPrivateHubの出来上がり。でも、データは、消える可能性があるということに留意。天下のGitHubでは、そういうことは起きない。
 <span class="spanExplain">参考サイト</span><h2></h2>
 <ul>
 <li><a href="https://www.webprofessional.jp/setting-up-your-raspberry-pi-as-a-git-server/">たった1万円以下で作れる！Raspberry Piで動く自分だけのGitサーバー</a>
@@ -12,6 +12,34 @@ WANには接続できるようにして、しかも、ドメインネームを�
 
 <h2>手順</h2>
 <div class="pp">
+<span class="spanExplain">gitユーザー作成(piのままでもよい)</span>
+<pre>
+$ <span class="spanCaution">sudo adduser git</span>
+ユーザ `git' を追加しています...
+新しいグループ `git' (1001) を追加しています...
+新しいユーザ `git' (1001) をグループ `git' として追加しています...
+ホームディレクトリ `/home/git' を作成しています...
+`/etc/skel' からファイルをコピーしています...
+新しい UNIX パスワードを入力してください:<span class="spanCaution">git</span>
+新しい UNIX パスワードを再入力してください:<span class="spanCaution">git</span>
+passwd: パスワードは正しく更新されました
+git のユーザ情報を変更中
+新しい値を入力してください。標準設定値を使うならリターンを押してください
+	フルネーム []: <span class="spanCaution">USAKU Takahashi</span>
+	部屋番号 []: <span class="spanCaution">-</span>
+	職場電話番号 []: <span class="spanCaution">-</span>
+	自宅電話番号 []: <span class="spanCaution">-</span>
+	その他 []: -</span>
+以上で正しいですか? [Y/n] <span class="spanCaution">y</span>
+</pre>
+<span class="spanExplain">SSHのための鍵の生成</span>
+<pre>
+もう作ってあるから省略
+</pre>
+<span class="spanExplain">新しいリモートリポジトリの作成</span>
+<pre>
+
+</pre>
 </div>
 
 
