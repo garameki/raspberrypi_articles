@@ -224,7 +224,7 @@ frontdown.sh  lcd.sh  python_games  テンプレート  ビデオ	公開
 root@raspberrypi:/home/pi#<span class="spanCaution"> cd /home/git/.ssh</span>
 root@raspberrypi:/home/git/.ssh#<span class="spanCaution" style="font-size:25px;"> cat /home/pi/ggg &gt;&gt; authorized_keys</span>
 root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> cat authorized_keys</span>
-<span style="color:#aaaaff">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Jm+8zlpIIFthGUm82b69tGkWl2CCpyL1O5oyXOtRBuMQNML8iecVZpzNzYus4bhnBoZmcKa4m6YTYLmXnePEtdrrz5U0xbeSnLCMuVvH1pl8obSpZFC9nUM8Xs6UDMqORtFFggvYlVsVRyz0RvcuPLjtQunMgemDMaYX/n+nx61cdG9hjFMbMcm2gKufo09FbKI53Qkrk/plylEWisfyLRXPvmESZchh2UDvbnjrQ6K9MrsjueqDwszGELQfv/gZleTRgwxj1J6B/sbBi8IabxeAX34+ZxHToTtEkjtqIcDARAlQVWvlZG61u+ujM17x4CY2KsNHAMaeImrKaWR7 git@raspberrypi</span>
+<span style="color:#8888ff">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Jm+8zlpIIFthGUm82b69tGkWl2CCpyL1O5oyXOtRBuMQNML8iecVZpzNzYus4bhnBoZmcKa4m6YTYLmXnePEtdrrz5U0xbeSnLCMuVvH1pl8obSpZFC9nUM8Xs6UDMqORtFFggvYlVsVRyz0RvcuPLjtQunMgemDMaYX/n+nx61cdG9hjFMbMcm2gKufo09FbKI53Qkrk/plylEWisfyLRXPvmESZchh2UDvbnjrQ6K9MrsjueqDwszGELQfv/gZleTRgwxj1J6B/sbBi8IabxeAX34+ZxHToTtEkjtqIcDARAlQVWvlZG61u+ujM17x4CY2KsNHAMaeImrKaWR7 git@raspberrypi</span>
 <span style="color:#aaffaa">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDby+pOjkAI3fgLOBd47LnjiTgkkHGZOKiaV2616rA9IBqlij47we5/Py56WG3q2PrDYMZSAo8mgc+q5HJIMbvWuyEs+lS0ANQQiiIcNH4WzqO5qCvzvh+nJpeKWlj5XIl/1CTvKfsolpdl4IO9s1eThaAwDldMg9aLBrBaT7noQRMAmUrQ5pZr0c2rno4oAUcOCf6MfzjHWo37DbUWrj617VrC9mbnlEkNpeQxqwCPOnxMjYgZAxBQ0ViZF5NXLoKCnB11PsOh2b28H6+xiSGiJTxTOqjux6SI8VDJ2HfT6/lwSiG/GML7CdTigjPNjNZsqW6XXqeiq+lccfFs5Q6b pi@raspberrypi</span>
 <span style="color:#ffaaaa">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIxU6a5NhvSlCCNeNxXY2c+6jS6iHY91dH7lNQxlgeTomes+E0XikBaVT4u95Njf2vuwp+Ds9oj28Ouxs4XMsG2wzcseHiYTtGW9+bvnBujMB0FQO4j89W3RWEhSFmbMhZC7tTa15jX6jqpuZv9o+uPGNdtLru4xgFQ+2684wsBJ4Myc+d0DU4SQ4ccHtvneDXTLYBwJ5PgTu1dLPGeHDMSnncL8QIb+Nn77g1XOrwWub6fCOjIebVAEYjd1DOUfHYY4CEPj5wkq+1twinO7rDLCLrV6H5Nik+2V8HMHxgqP0SnZs8snRBE1q6/rhoa3pEmdG7OTOBsXrLWzH2b6/H usaku@DESKTOP-4O5NGLG</span>
 root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> exit</span>
@@ -273,8 +273,62 @@ sudo rsync -av --delete /home/git $USBBACK/git
 </pre>
 gitユーザーのHOMEをまるまるUSBメモリに同期。
 $USBBACKは/media/pi/TOSHIBA。
+<span class="spanExplain">バックアップの実行</span>
 <pre>
 $ <span class="spanCaution">sudo ./backup.sh</span>
+sending incremental file list
+git/
+git/.bash_history
+git/.bash_logout
+git/.bashrc
+git/.profile
+git/.selected_editor
+git/.viminfo
+git/.ssh/
+git/.ssh/authorized_keys
+git/.ssh/id_rsa
+git/.ssh/id_rsa.pub
+git/test2Repo.git/
+git/test2Repo.git/HEAD
+git/test2Repo.git/config
+git/test2Repo.git/description
+git/test2Repo.git/branches/
+git/test2Repo.git/hooks/
+git/test2Repo.git/hooks/applypatch-msg.sample
+git/test2Repo.git/hooks/commit-msg.sample
+git/test2Repo.git/hooks/post-update.sample
+git/test2Repo.git/hooks/pre-applypatch.sample
+git/test2Repo.git/hooks/pre-commit.sample
+git/test2Repo.git/hooks/pre-push.sample
+git/test2Repo.git/hooks/pre-rebase.sample
+git/test2Repo.git/hooks/pre-receive.sample
+git/test2Repo.git/hooks/prepare-commit-msg.sample
+git/test2Repo.git/hooks/update.sample
+git/test2Repo.git/info/
+git/test2Repo.git/info/exclude
+git/test2Repo.git/objects/
+git/test2Repo.git/objects/3a/
+git/test2Repo.git/objects/3a/c54e4fce17a6e626d31a3a197233b9f82fded9
+git/test2Repo.git/objects/9c/
+git/test2Repo.git/objects/9c/5c8730f9894b66efbeb06522f66e1810bae972
+git/test2Repo.git/objects/9d/
+git/test2Repo.git/objects/9d/aeafb9864cf43055ae93beb0afd6c7d144bfa4
+git/test2Repo.git/objects/info/
+git/test2Repo.git/objects/pack/
+git/test2Repo.git/refs/
+git/test2Repo.git/refs/heads/
+git/test2Repo.git/refs/heads/master
+git/test2Repo.git/refs/tags/
+
+sent 27,972 bytes  received 597 bytes  57,138.00 bytes/sec
+total size is 25,472  speedup is 0.89
+pi@raspberrypi:~
+$ <span class="spanCaution">cd /media/pi/SONY</span>
+pi@raspberrypi:/media/pi/SONY
+$ <span class="spanCaution">ls</span>
+backup1  data  <span class="spanGreen" style="font-size:25px;">git</span>  lost+found  raspi1st
+pi@raspberrypi:/media/pi/SONY
+
 </pre>
 バックアップできた。
 
