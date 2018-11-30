@@ -436,4 +436,52 @@ usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
 </div>
 
 
+<h2>現存のローカルリポジトリを移管</h2>
+<div class="pp">
+<span class="spanExplain">リモートリポジトリの作成</span>
+<pre>
+pi@raspberrypi:~
+$ <span class="spanCaution">su git</span>
+パスワード:<span class="spanCaution">*******</span>
+git@raspberrypi:/home/pi $ <span class="spanCaution">cd</span>
+git@raspberrypi:~ $ <span class="spanCaution">ls</span>
+test2Repo.git
+git@raspberrypi:~ $ <span class="spanCaution">mkdir raspberrypi80_html.git</span>
+git@raspberrypi:~ $ <span class="spanCaution">cd *html*</span>
+git@raspberrypi:~/raspberrypi80_html.git $ <span class="spanCaution">git --bare init</span>
+Initialized empty Git repository in /home/git/raspberrypi80_html.git/
+git@raspberrypi:~/raspberrypi80_html.git $ 
+</pre>
+
+<span class="spanExplain">ローカル側</span>
+<pre>
+pi@raspberrypi:~/www/garameki/raspberrypi/html(master)
+$ <span class="spanCaution">git remote -v</span>
+origin	git@github.com:garameki/raspberry_pi_html.git (fetch)
+origin	git@github.com:garameki/raspberry_pi_html.git (push)
+$ <span class="spanCaution">git remote rm origin</span>
+$ <span class="spanCaution">git remote add origin git@192.168.3.8:/home/git/raspberrypi80_html.git</span>
+$ <span class="spanCaution">git remote -v</span>
+origin	git@192.168.3.8:/home/git/raspberrypi80_html.git (fetch)
+origin	git@192.168.3.8:/home/git/raspberrypi80_html.git (push)
+$ <span class="spanCaution">git push --set-upstream origin master
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+Counting objects: 206, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (202/202), done.
+Writing objects: 100% (206/206), 71.98 KiB | 0 bytes/s, done.
+Total 206 (delta 121), reused 0 (delta 0)
+remote: Resolving deltas: 100% (121/121), done.
+To 192.168.3.8:/home/git/raspberrypi80_html.git
+ * [new branch]      master -> master
+Branch master set up to track remote branch master from origin.
+pi@raspberrypi:~/www/garameki/raspberrypi/html(master)
+$ 
+
+</pre>
+pushできた。
+
+</div>
+
+
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181201">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
