@@ -62,7 +62,7 @@ warning: You appear to have cloned an empty repository.
 $ <span class="spanCaution">ls -l</span>
 合計 40
 drwxr-xr-x 3 root root 4096 11月 30 10:52 <span class="spanGreen">testRepo</span>
-$ su git
+$ <span class="spanCaution">su git
 パスワード:<span class="spanCaution">********</span>
 git@raspberrypi:/home/pi/git $ <span class="spanCaution">cd /media</span>
 git@raspberrypi:/media $ <span class="spanCaution">ls</span>
@@ -86,30 +86,30 @@ drwxr-xr-x 1 usaku 197121 0 11月 30 11:22 <span class="spanGreen">testRopo</spa
 
 <span class="spanExplain">remoteの確認</span>
 <pre>
-$ cd /home/pi/git/testRepo
-$ git remote -v
+$ <span class="spanCaution">cd /home/pi/git/testRepo</span>
+$ <span class="spanCaution">git remote -v</span>
 origin	pi@192.168.3.8:/media/pi/SONY/git/testRepo.git (fetch)
 origin	pi@192.168.3.8:/media/pi/SONY/git/testRepo.git (push)
 </pre>
 originという名前で、リモートリポジトリが登録されている<br>
 
-<span class="spanExplain">git pushしてみる</span>
+<span class="spanExplain">git pushしてみる</span></span>
 <pre>
-$ cd /home/pi/git
-$ echo This is a test > tt.txt
+$ <span class="spanCaution">cd /home/pi/git</span>
+$ <span class="spanCaution">echo This is a test &gt; tt.txt</span>
 bash: tt.txt: 許可がありません
-$ cd ..
-$ ls -l | grep testRepo
+$ <span class="spanCaution">cd ..</span>
+$ <span class="spanCaution">ls -l | grep testRepo</span>
 drwxr-xr-x 3 <span class="spanGreen">root root</span> 4096 11月 30 10:52 <span class="spanGreen">testRepo</span>
-$ sudo chown pi:root testRepo
-$ cd testRepo
-$ echo This is a test > tt.txt
-$ ls
+$ <span class="spanCaution">sudo chown pi:root testRepo</span>
+$ <span class="spanCaution">cd testRepo</span>
+$ <span class="spanCaution">echo This is a test &gt; tt.txt</span>
+$ <span class="spanCaution">ls</span>
 tt.txt
-$ git add tt.txt
+$ <span class="spanCaution">git add tt.txt</span>
 fatal: Unable to create '/home/pi/git/testRepo/.git/index.lock': 許可がありません
-$ sudo git add tt.txt
-$ sudo git commit -m "first commit"
+$ <span class="spanCaution">sudo git add tt.txt</span>
+$ <span class="spanCaution">sudo git commit -m "first commit"</span>
 
 *** Please tell me who you are.
 
@@ -122,13 +122,13 @@ to set your account's default identity.
 Omit --global to set the identity only in this repository.
 
 fatal: unable to auto-detect email address (got 'root@raspberrypi.(none)')
-$ sudo git config --global user.email "test@example.com"
-$ sudo git config --global user.name "USAKU Takahashi"
-$ sudo git commit -m "first commit"
+$ <span class="spanCaution">sudo git config --global user.email "test@example.com"</span>
+$ <span class="spanCaution">sudo git config --global user.name "USAKU Takahashi"</span>
+$ <span class="spanCaution">sudo git commit -m "first commit"</span>
 [master (root-commit) f0da030] first commit
  1 file changed, 1 insertion(+)
  create mode 100644 tt.txt
-$ sudo git push
+$ <span class="spanCaution">sudo git push</span>
 pi@192.168.3.8's password: 
 Counting objects: 3, done.
 Writing objects: 100% (3/3), 226 bytes | 0 bytes/s, done.
@@ -137,13 +137,13 @@ Total 3 (delta 0), reused 0 (delta 0)
 exit
 ^Z
 [1]+  停止                  sudo git push
-$ bg 1
-[1]+ sudo git push &
-$ ps
+$ <span class="spanCaution">bg 1</span>
+[1]+ sudo git push &amp;
+$ <span class="spanCaution">ps</span>
   PID TTY          TIME CMD
  9314 pts/3    00:00:00 bash
 10171 pts/3    00:00:00 ps
-$ ps -a
+$ <span class="spanCaution">ps -a</span>
   PID TTY          TIME CMD
  7444 pts/0    00:00:25 python3
  7640 pts/1    01:03:30 python3
@@ -152,21 +152,21 @@ $ ps -a
 10147 pts/3    00:00:00 git
 10148 pts/3    00:00:00 ssh
 10175 pts/3    00:00:00 ps
-$ fg 1
+$ <span class="spanCaution">fg 1</span>
 sudo git push
 
 ^C
-$ vim /media/pi/SONY/git/testRepo/tt.txt
-$ cat /media/pi/SONY/git/testRepo/tt.txt
+$ <span class="spanCaution">vim /media/pi/SONY/git/testRepo/tt.txt</span>
+$ <span class="spanCaution">cat /media/pi/SONY/git/testRepo/tt.txt</span>
 cat: /media/pi/SONY/git/testRepo/tt.txt: そのようなファイルやディレクトリはありません
-$ sudo git push --set-upstream origin master
+$ <span class="spanCaution">sudo git push --set-upstream origin master</span>
 pi@192.168.3.8's password: 
 Counting objects: 3, done.
 Writing objects: 100% (3/3), 226 bytes | 0 bytes/s, done.
 Total 3 (delta 0), reused 0 (delta 0)
 
 </pre>
-#いつまで待っても終わらない...<br><br>
+いつまで待っても終わらない...<br><br>
 <span style="font-size:25px;color:gold;">これはUSBメモリにアクセスしようとしているのが良くない</span>
 と思ったので、gitユーザーアカウントを取って、そこに、リモートリポジトリを格納し、バックアップはsuper user権限で、piユーザーからUSBメモリにrsyncしようと考えました。<br>
 <br>
@@ -178,7 +178,7 @@ Total 3 (delta 0), reused 0 (delta 0)
 $ <span class="spanCaution">su git</span>
 パスワード:<span class="spanCaution">********</span>
 $ <span class="spanCaution">cd</span>
-$ ssh-keygen -t rsa
+$ <span class="spanCaution">ssh-keygen -t rsa</span>
 Generating public/private rsa key pair.
 Enter file in which to save the key (/home/git/.ssh/id_rsa): 
 Enter passphrase (empty for no passphrase): 
@@ -200,55 +200,55 @@ The key's randomart image is:
 |  E.+@%OB+  o.+ =|
 +----[SHA256]-----+
 
-$ ls
+$ <span class="spanCaution">ls</span>
 id_rsa  id_rsa.pub
-$ chmod 400 id_rsa
-$ chmod 444 id_rsa.pub
-$ ls -l
+$ <span class="spanCaution">chmod 400 id_rsa</span>
+$ <span class="spanCaution">chmod 444 id_rsa.pub</span>
+$ <span class="spanCaution">ls -l</span>
 合計 8
 -r-------- 1 git git 1766 11月 30 13:33 id_rsa
 -r--r--r-- 1 git git  397 11月 30 13:33 id_rsa.pub
-$ cat id_rsa.pub >> authorized_keys
-$ ls
+$ <span class="spanCaution" style="font-size:25px">cat id_rsa.pub &gt;&gt; authorized_keys</span>
+$ <span class="spanCaution">ls</span>
 authorized_keys  id_rsa  id_rsa.pub
-$ su
+$ <span class="spanCaution">su</span>
 パスワード:
-root@raspberrypi:/home/git/.ssh# ls
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> ls</span>
 authorized_keys  id_rsa  id_rsa.pub
-root@raspberrypi:/home/git/.ssh# cat /home/pi/.ssh/id_rsa.pub >> authorized_keys
-root@raspberrypi:/home/git/.ssh# cd /home/pi
-root@raspberrypi:/home/pi# ls
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution" style="font-size:25px"> cat /home/pi/.ssh/id_rsa.pub &gt;&gt; authorized_keys</span>
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> cd /home/pi</span>
+root@raspberrypi:/home/pi#<span class="spanCaution"> ls</span>
 MagPi	      ggg     oldconffiles  www		  デスクトップ	音楽
 backup.sh     git     public	    ダウンロード  ドキュメント	画像
 frontdown.sh  lcd.sh  python_games  テンプレート  ビデオ	公開
-root@raspberrypi:/home/pi# cd /home/git/.ssh
-root@raspberrypi:/home/git/.ssh# cat /home/pi/ggg >> authorized_keys
-root@raspberrypi:/home/git/.ssh# cat authorized_keys
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Jm+8zlpIIFthGUm82b69tGkWl2CCpyL1O5oyXOtRBuMQNML8iecVZpzNzYus4bhnBoZmcKa4m6YTYLmXnePEtdrrz5U0xbeSnLCMuVvH1pl8obSpZFC9nUM8Xs6UDMqORtFFggvYlVsVRyz0RvcuPLjtQunMgemDMaYX/n+nx61cdG9hjFMbMcm2gKufo09FbKI53Qkrk/plylEWisfyLRXPvmESZchh2UDvbnjrQ6K9MrsjueqDwszGELQfv/gZleTRgwxj1J6B/sbBi8IabxeAX34+ZxHToTtEkjtqIcDARAlQVWvlZG61u+ujM17x4CY2KsNHAMaeImrKaWR7 git@raspberrypi
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDby+pOjkAI3fgLOBd47LnjiTgkkHGZOKiaV2616rA9IBqlij47we5/Py56WG3q2PrDYMZSAo8mgc+q5HJIMbvWuyEs+lS0ANQQiiIcNH4WzqO5qCvzvh+nJpeKWlj5XIl/1CTvKfsolpdl4IO9s1eThaAwDldMg9aLBrBaT7noQRMAmUrQ5pZr0c2rno4oAUcOCf6MfzjHWo37DbUWrj617VrC9mbnlEkNpeQxqwCPOnxMjYgZAxBQ0ViZF5NXLoKCnB11PsOh2b28H6+xiSGiJTxTOqjux6SI8VDJ2HfT6/lwSiG/GML7CdTigjPNjNZsqW6XXqeiq+lccfFs5Q6b pi@raspberrypi
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIxU6a5NhvSlCCNeNxXY2c+6jS6iHY91dH7lNQxlgeTomes+E0XikBaVT4u95Njf2vuwp+Ds9oj28Ouxs4XMsG2wzcseHiYTtGW9+bvnBujMB0FQO4j89W3RWEhSFmbMhZC7tTa15jX6jqpuZv9o+uPGNdtLru4xgFQ+2684wsBJ4Myc+d0DU4SQ4ccHtvneDXTLYBwJ5PgTu1dLPGeHDMSnncL8QIb+Nn77g1XOrwWub6fCOjIebVAEYjd1DOUfHYY4CEPj5wkq+1twinO7rDLCLrV6H5Nik+2V8HMHxgqP0SnZs8snRBE1q6/rhoa3pEmdG7OTOBsXrLWzH2b6/H usaku@DESKTOP-4O5NGLG
-root@raspberrypi:/home/git/.ssh# exit
+root@raspberrypi:/home/pi#<span class="spanCaution"> cd /home/git/.ssh</span>
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution" style="font-size:25px;"> cat /home/pi/ggg &gt;&gt; authorized_keys</span>
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> cat authorized_keys</span>
+<span style="color:#aaaaff">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Jm+8zlpIIFthGUm82b69tGkWl2CCpyL1O5oyXOtRBuMQNML8iecVZpzNzYus4bhnBoZmcKa4m6YTYLmXnePEtdrrz5U0xbeSnLCMuVvH1pl8obSpZFC9nUM8Xs6UDMqORtFFggvYlVsVRyz0RvcuPLjtQunMgemDMaYX/n+nx61cdG9hjFMbMcm2gKufo09FbKI53Qkrk/plylEWisfyLRXPvmESZchh2UDvbnjrQ6K9MrsjueqDwszGELQfv/gZleTRgwxj1J6B/sbBi8IabxeAX34+ZxHToTtEkjtqIcDARAlQVWvlZG61u+ujM17x4CY2KsNHAMaeImrKaWR7 git@raspberrypi</span>
+<span style="color:#aaffaa">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDby+pOjkAI3fgLOBd47LnjiTgkkHGZOKiaV2616rA9IBqlij47we5/Py56WG3q2PrDYMZSAo8mgc+q5HJIMbvWuyEs+lS0ANQQiiIcNH4WzqO5qCvzvh+nJpeKWlj5XIl/1CTvKfsolpdl4IO9s1eThaAwDldMg9aLBrBaT7noQRMAmUrQ5pZr0c2rno4oAUcOCf6MfzjHWo37DbUWrj617VrC9mbnlEkNpeQxqwCPOnxMjYgZAxBQ0ViZF5NXLoKCnB11PsOh2b28H6+xiSGiJTxTOqjux6SI8VDJ2HfT6/lwSiG/GML7CdTigjPNjNZsqW6XXqeiq+lccfFs5Q6b pi@raspberrypi</span>
+<span style="color:#ffaaaa">ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDIxU6a5NhvSlCCNeNxXY2c+6jS6iHY91dH7lNQxlgeTomes+E0XikBaVT4u95Njf2vuwp+Ds9oj28Ouxs4XMsG2wzcseHiYTtGW9+bvnBujMB0FQO4j89W3RWEhSFmbMhZC7tTa15jX6jqpuZv9o+uPGNdtLru4xgFQ+2684wsBJ4Myc+d0DU4SQ4ccHtvneDXTLYBwJ5PgTu1dLPGeHDMSnncL8QIb+Nn77g1XOrwWub6fCOjIebVAEYjd1DOUfHYY4CEPj5wkq+1twinO7rDLCLrV6H5Nik+2V8HMHxgqP0SnZs8snRBE1q6/rhoa3pEmdG7OTOBsXrLWzH2b6/H usaku@DESKTOP-4O5NGLG</span>
+root@raspberrypi:/home/git/.ssh#<span class="spanCaution"> exit</span>
 exit
-$ ls
+$ <span class="spanCaution">ls</span>
 authorized_keys  id_rsa  id_rsa.pub
-$ cd ..
-$ mkdir test2Repo.git
-$ cd test2Repo.git
-$ ls -l
+$ <span class="spanCaution">cd ..</span>
+$ <span class="spanCaution">mkdir test2Repo.git</span>
+$ <span class="spanCaution">cd test2Repo.git</span>
+$ <span class="spanCaution">ls -l</span>
 合計 4
 drwxr-xr-x 2 git git 4096 11月 30 13:39 test2Repo.git
-$ cd test2Repo.git
-$ git --bare --shared init
+$ <span class="spanCaution">cd test2Repo.git</span>
+$ <span class="spanCaution">git --bare --shared init</span>
 Unknown option: --shared
-usage: git [--version] [--help] [-C <path>] [-c name=value]
-           [--exec-path[=<path>]] [--html-path] [--man-path] [--info-path]
+usage: git [--version] [--help] [-C &lt;path&gt;] [-c name=value]
+           [--exec-path[=&lt;path&gt;]] [--html-path] [--man-path] [--info-path]
            [-p | --paginate | --no-pager] [--no-replace-objects] [--bare]
-           [--git-dir=<path>] [--work-tree=<path>] [--namespace=<name>]
-           <command> [<args>]
+           [--git-dir=&lt;path&gt;] [--work-tree=&lt;path&gt;] [--namespace=&lt;name&gt;]
+           &lt;command&gt; [&lt;args&gt;]
 
-$ git --bare init
+$ <span class="spanCaution">git --bare init</span>
 Initialized empty Git repository in /home/git/test2Repo.git/
-$ ls -l
+$ <span class="spanCaution">ls -l</span>
 合計 32
 -rw-r--r-- 1 git git   23 11月 30 13:41 HEAD
 drwxr-xr-x 2 git git 4096 11月 30 13:41 branches
@@ -259,11 +259,11 @@ drwxr-xr-x 2 git git 4096 11月 30 13:41 info
 drwxr-xr-x 4 git git 4096 11月 30 13:41 objects
 drwxr-xr-x 4 git git 4096 11月 30 13:41 refs
 
-$ exit
+$ <span class="spanCaution">exit</span>
 exit
 pi@raspberrypi:~
-$ cd
-$ vim backup.sh
+$ <span class="spanCaution">cd</span>
+$ <span class="spanCaution">vim backup.sh</span>
 </pre>
 次を挿入<br>
 <span class="spanExplain">/home/pi/backup.sh</span>
@@ -273,27 +273,93 @@ sudo rsync -av --delete /home/git $USBBACK/git
 </pre>
 gitユーザーのHOMEをまるまるUSBメモリに同期。
 $USBBACKは/media/pi/TOSHIBA。
+<pre>
+$ <span class="spanCaution">sudo ./backup.sh</span>
+</pre>
+バックアップできた。
 
 
+<span class="spanExplain">Windowsから確認する</span>
+<pre>
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git
+$ <span class="spanCaution">git clone git@192.168.3.8:/home/git/test2Repo.git</span>
+Cloning into 'test2Repo'...
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+warning: You appear to have cloned an empty repository.
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git
+$ <span class="spanCaution">ls</span>
+total 141
+drwxr-xr-x 1 usaku 197121    0 11月 30 13:44 test2Repo
+$ <span class="spanCaution">cd test2Repo</span>
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">ls</span>
+total 12
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 .git
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 .
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 ..
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">echo test &gt; tttt</span>
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">ls</span>
+total 13
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 .
+-rw-r--r-- 1 usaku 197121 5 11月 30 13:44 tttt
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 .git
+drwxr-xr-x 1 usaku 197121 0 11月 30 13:44 ..
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">git status</span>
+On branch master
+
+No commits yet
+
+Untracked files:
+  (use "git add &lt;file&gt;..." to include in what will be committed)
+
+<span style="color:red;">        tttt</span>
+
+nothing added to commit but untracked files present (use "git add" to track)
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">git add *</span>
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">git status</span>
+On branch master
+
+No commits yet
+
+Changes to be committed:
+  (use "git rm --cached &lt;file&gt;..." to unstage)
+
+<span style="color:lightgreen;">        new file:   tttt</span>
+
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">git commit -m "first commit"</span>
+[master (root-commit) 3ac54e4] first commit
+ 1 file changed, 1 insertion(+)
+ create mode 100644 tttt
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+$ <span class="spanCaution">git push --set-upstream origin master</span>
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+Counting objects: 3, done.
+Writing objects: 100% (3/3), 215 bytes | 107.00 KiB/s, done.
+Total 3 (delta 0), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test2Repo.git
+ * [new branch]      master -&gt; master
+Branch 'master' set up to track remote branch 'master' from 'origin'.
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/documents/git/test2Repo (master)
+</pre>
+できた。
 
 </div>
 
 
-
-<h2></h2>
-<div class="pp">
-</div>
-
-
-<h2></h2>
-<div class="pp">
-</div>
-
-
-<h2></h2>
-<div class="pp">
-</div>
-
-
-
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181201">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
