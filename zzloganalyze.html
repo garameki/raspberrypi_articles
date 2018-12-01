@@ -1,0 +1,283 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="Apacheのアクセスログを解析する。GitHubにrequest-log-analyzerというものをみつけたので、それを使ってみる">
+<title>Apacheのアクセス生ログを解析してみる|がらめきドットコム</title>
+</head><body id="body">
+<h1>Apacheのアクセス生ログを解析してみる</h1>
+Google Analyzeは使ったことがない。使ってもみたい。
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="http://request-log-analyzer.com/">request-log-analyzer : Create reports based on your log files.</a>
+<li><a href="https://github.com/wvanbergen/request-log-analyzer">wvanbergen/request-log-analyzer</a>
+</ul>
+
+
+<h2>インストール</h2>
+<div class="pp">
+RubyはWindowsに入っているので、gemするだけ。
+<span class="spanExplain">Rubyコマンドプロンプトにて</span>
+<pre>
+C:\Users\usaku&gt;<span class="spanCaution">gem install request-log-analyzer</span>
+Fetching: request-log-analyzer-1.13.4.gem (100%)
+Successfully installed request-log-analyzer-1.13.4
+Parsing documentation for request-log-analyzer-1.13.4
+Installing ri documentation for request-log-analyzer-1.13.4
+Done installing documentation for request-log-analyzer after 3 seconds
+1 gem installed
+
+</pre>
+</div>
+
+<h2>準備</h2>
+<div class="pp">
+gemをインストールしたのはWindowsの中である、なので、リモートリポジトリから、windwosのフォルダの中にラズパイのログファイルを引っ張ってくる準備をする。<br>
+<span class="spanExplain">リモートリポジトリのラズパイ</span>
+<pre>
+C:\Users\usaku&gt;ssh pi@192.168.3.8
+Enter passphrase for key 'C:\Users\usaku/.ssh/id_rsa':
+Linux raspberrypi 4.14.79-v7+ #1159 SMP Sun Nov 4 17:50:20 GMT 2018 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Fri Nov 30 19:44:07 2018 from 192.168.3.2
+pi@raspberrypi:~
+$ su git
+パスワード:
+git@raspberrypi:/home/pi $ cd
+git@raspberrypi:~ $ ls
+raspberrypi80_articles.git  raspberrypi80_html.git  test2Repo.git
+git@raspberrypi:~ $ mkdir log800.git
+git@raspberrypi:~ $ cd log800.git
+git@raspberrypi:~/log800.git $ git --bare init
+Initialized empty Git repository in /home/git/log800.git/
+git@raspberrypi:~/log800.git $
+git@raspberrypi:~/log800.git $ exit
+exit
+pi@raspberrypi:~
+$ exit
+ログアウト
+Connection to 192.168.3.8 closed.
+
+C:\Users\usaku&gt;
+</pre>
+
+<span class="spanExplain">ログがあるラズパイ</span>
+<pre>
+pi@raspberrypi:/var/log/apache2
+$ sudo git init
+Reinitialized existing Git repository in /var/log/apache2/.git/
+pi@raspberrypi:/var/log/apache2
+$ git remote -v
+origin  git@192.168.3.8:/home/git/log800.git (fetch)
+origin  git@192.168.3.8:/home/git/log800.git (push)
+pi@raspberrypi:/var/log/apache2
+$ sudo git add *
+pi@raspberrypi:/var/log/apache2
+$ sudo git commit
+
+*** Please tell me who you are.
+
+Run
+
+  git config --global user.email "you@example.com"
+  git config --global user.name "Your Name"
+
+to set your account's default identity.
+Omit --global to set the identity only in this repository.
+
+fatal: unable to auto-detect email address (got 'root@raspberrypi.(none)')
+pi@raspberrypi:/var/log/apache2
+$ sudo git config --global user.email "example@example.com"
+pi@raspberrypi:/var/log/apache2
+$ sudo git config --global user.name "USAKU Takahashi"
+pi@raspberrypi:/var/log/apache2
+$ sudo git commit
+[master (root-commit) f0356fe] First commit
+ 88 files changed, 6974 insertions(+)
+ create mode 100644 access.log
+ create mode 100644 access.log.1
+ create mode 100644 access.log.2.gz
+ create mode 100644 error.log
+ create mode 100644 error.log.1
+ create mode 100644 error.log.10.gz
+ create mode 100644 error.log.11.gz
+ create mode 100644 error.log.12.gz
+ create mode 100644 error.log.13.gz
+ create mode 100644 error.log.14.gz
+ create mode 100644 error.log.2.gz
+ create mode 100644 error.log.3.gz
+ create mode 100644 error.log.4.gz
+ create mode 100644 error.log.5.gz
+ create mode 100644 error.log.6.gz
+ create mode 100644 error.log.7.gz
+ create mode 100644 error.log.8.gz
+ create mode 100644 error.log.9.gz
+ create mode 100644 garamekiaccess.log
+ create mode 100644 garamekiaccess.log.10
+ create mode 100644 garamekiaccess.log.10.gz
+ create mode 100644 garamekiaccess.log.11
+ create mode 100644 garamekiaccess.log.11.gz
+ create mode 100644 garamekiaccess.log.12
+ create mode 100644 garamekiaccess.log.12.gz
+ create mode 100644 garamekiaccess.log.13
+ create mode 100644 garamekiaccess.log.13.gz
+ create mode 100644 garamekiaccess.log.14
+ create mode 100644 garamekiaccess.log.14.gz
+ create mode 100644 garamekiaccess.log.2.gz
+ create mode 100644 garamekiaccess.log.3.gz
+ create mode 100644 garamekiaccess.log.4
+ create mode 100644 garamekiaccess.log.4.gz
+ create mode 100644 garamekiaccess.log.5
+ create mode 100644 garamekiaccess.log.5.gz
+ create mode 100644 garamekiaccess.log.6
+ create mode 100644 garamekiaccess.log.6.gz
+ create mode 100644 garamekiaccess.log.7
+ create mode 100644 garamekiaccess.log.7.gz
+ create mode 100644 garamekiaccess.log.8
+ create mode 100644 garamekiaccess.log.8.gz
+ create mode 100644 garamekiaccess.log.9
+ create mode 100644 garamekiaccess.log.9.gz
+ create mode 100644 garamekierror.log
+ create mode 100644 garamekierror.log.1
+ create mode 100644 garamekierror.log.2.gz
+ create mode 100644 other_vhosts_access.log
+ create mode 100644 rgaccess.log
+ create mode 100644 rgaccess.log.1
+ create mode 100644 rgaccess.log.10.gz
+ create mode 100644 rgaccess.log.11.gz
+ create mode 100644 rgaccess.log.12.gz
+ create mode 100644 rgaccess.log.13.gz
+ create mode 100644 rgaccess.log.14.gz
+ create mode 100644 rgaccess.log.2.gz
+ create mode 100644 rgaccess.log.3.gz
+ create mode 100644 rgaccess.log.4.gz
+ create mode 100644 rgaccess.log.5.gz
+ create mode 100644 rgaccess.log.6.gz
+ create mode 100644 rgaccess.log.7.gz
+ create mode 100644 rgaccess.log.8.gz
+ create mode 100644 rgaccess.log.9.gz
+ create mode 100644 rgerror.log
+ create mode 100644 rgerror.log.1
+ create mode 100644 rgerror.log.2.gz
+ create mode 100644 rgerror.log.3.gz
+ create mode 100644 rgerror.log.4.gz
+ create mode 100644 rgerror.log.5.gz
+ create mode 100644 rgerror.log.6.gz
+ create mode 100644 rgerror.log.7.gz
+ create mode 100644 rgerror.log.8.gz
+ create mode 100644 shopAccess.log
+ create mode 100644 shopAccess.log.1
+ create mode 100644 shopAccess.log.10.gz
+ create mode 100644 shopAccess.log.11.gz
+ create mode 100644 shopAccess.log.12.gz
+ create mode 100644 shopAccess.log.13.gz
+ create mode 100644 shopAccess.log.14.gz
+ create mode 100644 shopAccess.log.2.gz
+ create mode 100644 shopAccess.log.3.gz
+ create mode 100644 shopAccess.log.4.gz
+ create mode 100644 shopAccess.log.5.gz
+ create mode 100644 shopAccess.log.6.gz
+ create mode 100644 shopAccess.log.7.gz
+ create mode 100644 shopAccess.log.8.gz
+ create mode 100644 shopAccess.log.9.gz
+ create mode 100644 shopError.log
+ create mode 100644 shopError.log.1
+pi@raspberrypi:/var/log/apache2(master)
+$ sudo git push --set-upstream origin master
+git@192.168.3.8's password:
+Permission denied, please try again.
+git@192.168.3.8's password:
+Counting objects: 85, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (84/84), done.
+Writing objects: 100% (85/85), 231.11 KiB | 0 bytes/s, done.
+Total 85 (delta 11), reused 0 (delta 0)
+To 192.168.3.8:/home/git/log800.git
+ * [new branch]      master -&gt; master
+Branch master set up to track remote branch master from origin.
+pi@raspberrypi:/var/log/apache2(master)
+$
+</pre>
+
+<span class="spanExplain">GitBash上でWindowsにpullする</span>
+<pre>
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/Documents/git
+$ git clone git@192.168.3.8:/home/git/log800.git
+Cloning into 'log800'...
+Enter passphrase for key '/c/Users/usaku/.ssh/id_rsa':
+remote: Counting objects: 85, done.
+remote: Compressing objects: 100% (84/84), done.
+remote: Total 85 (delta 11), reused 0 (delta 0)
+Receiving objects: 100% (85/85), 231.11 KiB | 1.69 MiB/s, done.
+Resolving deltas: 100% (11/11), done.
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/Documents/git
+$ cd log800
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/Documents/git/log800 (master)
+$ ls
+access.log                garamekiaccess.log.3.gz  rgaccess.log.8.gz
+access.log.1              garamekiaccess.log.4     rgaccess.log.9.gz
+access.log.2.gz           garamekiaccess.log.4.gz  rgerror.log
+error.log                 garamekiaccess.log.5     rgerror.log.1
+error.log.1               garamekiaccess.log.5.gz  rgerror.log.2.gz
+error.log.10.gz           garamekiaccess.log.6     rgerror.log.3.gz
+error.log.11.gz           garamekiaccess.log.6.gz  rgerror.log.4.gz
+error.log.12.gz           garamekiaccess.log.7     rgerror.log.5.gz
+error.log.13.gz           garamekiaccess.log.7.gz  rgerror.log.6.gz
+error.log.14.gz           garamekiaccess.log.8     rgerror.log.7.gz
+error.log.2.gz            garamekiaccess.log.8.gz  rgerror.log.8.gz
+error.log.3.gz            garamekiaccess.log.9     shopAccess.log
+error.log.4.gz            garamekiaccess.log.9.gz  shopAccess.log.1
+error.log.5.gz            garamekierror.log        shopAccess.log.10.gz
+error.log.6.gz            garamekierror.log.1      shopAccess.log.11.gz
+error.log.7.gz            garamekierror.log.2.gz   shopAccess.log.12.gz
+error.log.8.gz            other_vhosts_access.log  shopAccess.log.13.gz
+error.log.9.gz            rgaccess.log             shopAccess.log.14.gz
+garamekiaccess.log        rgaccess.log.1           shopAccess.log.2.gz
+garamekiaccess.log.10     rgaccess.log.10.gz       shopAccess.log.3.gz
+garamekiaccess.log.10.gz  rgaccess.log.11.gz       shopAccess.log.4.gz
+garamekiaccess.log.11     rgaccess.log.12.gz       shopAccess.log.5.gz
+garamekiaccess.log.11.gz  rgaccess.log.13.gz       shopAccess.log.6.gz
+garamekiaccess.log.12     rgaccess.log.14.gz       shopAccess.log.7.gz
+garamekiaccess.log.12.gz  rgaccess.log.2.gz        shopAccess.log.8.gz
+garamekiaccess.log.13     rgaccess.log.3.gz        shopAccess.log.9.gz
+garamekiaccess.log.13.gz  rgaccess.log.4.gz        shopError.log
+garamekiaccess.log.14     rgaccess.log.5.gz        shopError.log.1
+garamekiaccess.log.14.gz  rgaccess.log.6.gz
+garamekiaccess.log.2.gz   rgaccess.log.7.gz
+
+usaku@DESKTOP-4O5NGLG MINGW64 /c/Users/usaku/Documents/git/log800 (master)
+</pre>
+Windowsにラズパイのログファイルがやってきた。
+</div>
+
+<h2>解析</h2>
+<div class="pp">
+<span class="spanExplain">Rubyコマンドプロンプト上で解析</span>
+<pre>
+
+
+
+
+</pre>
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
