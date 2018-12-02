@@ -179,6 +179,29 @@ $ <span class="spanCaution">git branch -vv</span>
   master    e1311ff [raspi/master] Merge branch 'release-1'
 * release-1 3cac4fd [<span class="spanGreen">raspi/release-1</span>] Add bump-version.sh CHANGELOG.md
 </pre>
+<br><br>
+ついでにmasterとdevelopの両ブランチにマージするシェルスクリプト
+<span class="spanExplain">参考記事</span>
+<ul>
+<li><a href=""></a>
+</ul>
+<span class="spanExplain">merge.sh</span>
+<pre>
+#!/bin/bash
+
+echo Input Release BRANCH number [*.*]:
+read VERSION
+echo Input full version [*.*.*]:
+read FULL
+git checkout master
+git merge --no-ff -m "Merge from the branch release-${VERSION}" release-$VERSION
+git tag -a FULL -m "${FULL}"
+git push
+git checkout develop
+git merge --no-ff -m "Merge from the branch release-${VERSION}" release-$VERSION
+git checkout release-$VERSION
+</pre>
+バージョン番号を二回入力しているのは、不勉強なため。
 </div>
 
 <h2>コミットの修正</h2>
