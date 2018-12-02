@@ -1,0 +1,182 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="Gitを使うときの便利な設定">
+<title>Gitを使うときの便利な設定|がらめきドットコム</title>
+</head><body id="body">
+<h1>Gitを使うときの便利な設定|</h1>
+
+<h2>コマンドプロンプトにブランチの名前を表示</h2>
+<div class="pp">
+<span class="spanExplain">参考にした記事</span>
+<ol>
+<li><a href="https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d">Ubuntu: Show your git branch name on your terminal</a>
+<li><a href="https://www.softel.co.jp/blogs/tech/archives/2659">【bash】プロンプトの表示を変える</a>
+</ol>
+<span class="spanExplain">記事1より</span>
+<pre>
+# source code is from <a href="https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d">"https://gist.github.com/ankurk91/2efe14650d54d7d09528cea3ed432f6d</a>
+# Show git branch name
+force_color_prompt=yes
+color_prompt=yes
+parse_git_branch() {
+ git branch 2&gt; /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+}
+if [ "$color_prompt" = yes ]; then
+ PS1='${debian_chroot:+($debian_chroot)}\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\]<span class="spanCaution">\n</span>\$ '
+else
+ PS1='${debian_chroot:+($debian_chroot)}\u@\h:\w$(parse_git_branch)<span class="spanCaution">\n</span>\$ '
+fi
+unset color_prompt force_color_prompt
+</pre>
+これを、user homeの.bashrcの最後に追加する<br>
+<br>
+コマンドプロンプトは、長くなりがちなので、次の行でコマンドを待つようにした。<br>
+<br>
+On Demandな改良は記事2を参考にする。<br>
+
+</div>
+
+<h2>バージョン管理について</h2>
+<div class="pp">
+<span class="spanExplain">参考サイト</span>
+<ol>
+<li><a href="https://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a>
+<li><a href="https://gist.github.com/mareksuscak/1f206fbc3bb9d97dec9c/">GitHubGist mareksuscak/bump-version.sh</a>
+<li><a href=""></a>
+</ol>
+1のサイトを参考にして、2のサイトから、bump-version.shを導入して、バージョン管理に役立てる。
+<pre>
+$ <span class="spanCaution"> git clone git@gist.github.com:1f206fbc3bb9d97dec9c.git</span>
+Cloning into '1f206fbc3bb9d97dec9c'...
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+remote: Enumerating objects: 3, done.
+remote: Total 3 (delta 0), reused 0 (delta 0), pack-reused 3
+Receiving objects: 100% (3/3), done.
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> ls</span>
+1f206fbc3bb9d97dec9c  LICENSE  README.md  max31856.py
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> mv 1f206fbc3bb9d97dec9c 111</span>
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> ls</span>
+111  LICENSE  README.md  max31856.py
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> cd 111</span>
+pi@raspberrypi:~/src/spi/max31856/111(master)
+$ <span class="spanCaution"> ls</span>
+bump-version.sh
+pi@raspberrypi:~/src/spi/max31856/111(master)
+$ <span class="spanCaution"> ls -a</span>
+.  ..  .git  bump-version.sh
+pi@raspberrypi:~/src/spi/max31856/111(master)
+$ <span class="spanCaution"> rm -r .git</span>
+rm: 書き込み保護されたファイル 通常ファイル '.git/objects/pack/pack-eb0304fb00b177489514c6ac57811d9c8ff11a99.pack' を削除しますか?y
+rm: 書き込み保護されたファイル 通常ファイル '.git/objects/pack/pack-eb0304fb00b177489514c6ac57811d9c8ff11a99.idx' を削除しますか?y
+pi@raspberrypi:~/src/spi/max31856/111(release-1)
+$ <span class="spanCaution"> ls</span>
+bump-version.sh
+pi@raspberrypi:~/src/spi/max31856/111(release-1)
+$ <span class="spanCaution"> mv * ../</span>
+pi@raspberrypi:~/src/spi/max31856/111(release-1)
+$ <span class="spanCaution"> cd ..</span>
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> ls</span>
+111  LICENSE  README.md  bump-version.sh  max31856.py
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> rmdir 111</span>
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> chmod 550 bump-version.sh </span>
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> ./bump-version.sh </span>
+! Could not find a VERSION file.
+? Do you want to create a version file and start from scratch? [y]: ^C
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution"> ./bump-version.sh 1.1.0</span>
+! Could not find a VERSION file.
+? Do you want to create a version file and start from scratch? [y]: y
+? Now you can make adjustments to CHANGELOG.md. Then press enter to continue.
+
+❯ Pushing new version to the origin...
+[release-1 2923ecf] Add VERSION and CHANGELOG.md files, Bump version to v0.1.0.
+ 2 files changed, 23 insertions(+)
+ create mode 100644 CHANGELOG.md
+ create mode 100644 VERSION
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+<span class="spanGreen">ERROR</span>: Repository not found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+❯ Finished.
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution">ls</span>
+CHANGELOG.md  LICENSE  README.md  VERSION  bump-version.sh  max31856.py
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution">git log</span>
+commit 2923ecf9a504fb52a11985e028a01cf372547457
+Author: garameki <gomokumeshinomoto@gmail.com>
+Date:   Mon Dec 3 01:56:11 2018 +0900
+
+    Add VERSION and CHANGELOG.md files, Bump version to v0.1.0.
+
+commit 72e59933b72c3b53374bf8408bf4d289049a7786
+Author: garameki <gomokumeshinomoto@gmail.com>
+Date:   Mon Dec 3 01:04:57 2018 +0900
+
+    Add method version
+            modified:   max31856.py
+
+...................
+
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution">./bump-version.sh 1.1.0</span>
+❯ Current version: 0.1.0
+❯ Latest commit hash: 2923ecf
+? Enter a version number [0.2.0]: <span class="spanCaution">1.1.0</span>
+❯ Will set new version to be 1.1.0
+? Now you can make adjustments to CHANGELOG.md. Then press enter to continue.
+
+❯ Pushing new version to the origin...
+[release-1 ff8923d] Bump version to 1.1.0.
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+<span class="spanGreen">ERROR</span>: Repository not found.
+fatal: Could not read from remote repository.
+
+Please make sure you have the correct access rights
+and the repository exists.
+❯ Finished.
+pi@raspberrypi:~/src/spi/max31856(release-1)
+$ <span class="spanCaution">git log</span>
+commit ff8923d25db8f50e48cb89bb73199dd0a76908ed
+Author: garameki <gomokumeshinomoto@gmail.com>
+Date:   Mon Dec 3 01:57:29 2018 +0900
+
+    Bump version to 1.1.0.
+
+commit 2923ecf9a504fb52a11985e028a01cf372547457
+Author: garameki <gomokumeshinomoto@gmail.com>
+Date:   Mon Dec 3 01:56:11 2018 +0900
+
+    Add VERSION and CHANGELOG.md files, Bump version to v0.1.0.
+
+.......
+
+</pre>
+<span class="spanGreen">ERROR</span>となっているのは、リモートリポジトリにgit pushできていないから。commitはされています。<br>
+使う前に、upstreamを指定しておく必要があった。<br>
+<pre>
+<span style="color:gold;font-size:25px;">$ git push --set-upstream raspi release-1</span>
+</pre>
+と、1回やっておけば、「git pushのみで行けるはず」<br>
+確認は
+<pre>
+$ git branch -vv
+  develop   b52314c Merge branch 'release-1' into develop
+  master    e1311ff [raspi/master] Merge branch 'release-1'
+* release-1 3cac4fd [raspi/release-1] Add bump-version.sh CHANGELOG.md
+</pre>
+</div>
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181115">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
