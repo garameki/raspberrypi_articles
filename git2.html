@@ -1,0 +1,253 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="Gitを導入すると、どうも、コマンド入力が多くなり、仕事が遅くなる。しかも、ブランチを分けたりすると、どうもいけない。そこで、あるサイトを参考にして、シェルを活用することにした。">
+<title>Gitでバージョン管理(シェルにおまかせ編)|がらめきドットコム</title>
+</head><body id="body">
+<h1>Gitでバージョン管理(シェルにおまかせ編)</h1>
+以前にも、紹介したサイトだが、それを、詰めてみた。
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://nvie.com/posts/a-successful-git-branching-model/">A successful Git branching model</a>
+<li><a href="https://gist.github.com/mareksuscak/1f206fbc3bb9d97dec9c/">GitHubGist mareksuscak/bump-version.sh</a>
+</ul>
+<h2>リモートリポジトリの作成</h2>
+<div class="pp">
+<pre>
+pi@raspberrypi:~
+$ <span class="spanCaution">ssh git@192.168.3.8</span>
+Enter passphrase for key '/home/pi/.ssh/id_rsa': 
+Linux raspberrypi 4.14.79-v7+ #1159 SMP Sun Nov 4 17:50:20 GMT 2018 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Mon Dec  3 19:14:43 2018 from 192.168.3.6
+git@raspberrypi:~ $ <span class="spanCaution">mkdir test10.git</span>
+git@raspberrypi:~ $ <span class="spanCaution">cd test10.git/</span>
+git@raspberrypi:~/test10.git $ <span class="spanCaution">git --bare init</span>
+Initialized empty Git repository in /home/git/test10.git/
+git@raspberrypi:~/test10.git $ <span class="spanCaution">exit</span>
+ログアウト
+Connection to 192.168.3.8 closed.
+pi@raspberrypi:~
+</pre>
+</div>
+
+<h2>ローカルリポジトリの作成</h2>
+<div class="pp">
+<pre>
+pi@raspberrypi:~
+$ <span class="spanCaution">cd ~/git</span>
+pi@raspberrypi:~/git
+$ <span class="spanCaution">git clone git@192.168.3.8:/home/git/test10.git</span>
+Cloning into 'test10'...
+Enter passphrase for key '/home/pi/.ssh/id_rsa':<span class="spanCaution">*******</span> 
+warning: You appear to have cloned an empty repository.
+pi@raspberrypi:~/git
+$ <span class="spanCaution">cd test10</span>
+pi@raspberrypi:~/git/test10
+</pre>
+このままでは、空っぽです。
+</div>
+
+<h2>バージョニングの開始</h2>
+<div class="pp">
+<pre>
+pi@raspberrypi:~/git/test10
+$ <span class="spanCaution" style="font-size:25px;">bump-begin.sh</span>
+origin	git@192.168.3.8:/home/git/test10.git (fetch)
+origin	git@192.168.3.8:/home/git/test10.git (push)
+You must be master branch
+And you must make origin your ref you want to push by 'git remote add origin ~'
+
+ Do you want to create a version file, develop branch and release blanch and then start from scratch? [y]: <span class="spanCaution">y</span>
+Switched to a new branch 'release-0.1'
+fatal: your current branch 'release-0.1' does not have any commits yet
+
+[release-0.1 (root-commit) df148a9] Add VERSION and CHANGELOG.md files, Bump version to v0.1.0.
+ 2 files changed, 4 insertions(+)
+ create mode 100644 CHANGELOG.md
+ create mode 100644 VERSION
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*******</span>
+Counting objects: 4, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (2/2), done.
+Writing objects: 100% (4/4), 337 bytes | 0 bytes/s, done.
+Total 4 (delta 0), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test10.git
+ * [new branch]      release-0.1 -> release-0.1
+Switched to a new branch 'master'
+Your branch is based on 'origin/master', but the upstream is gone.
+  (use "git branch --unset-upstream" to fixup)
+Switched to a new branch 'develop'
+Switched to branch 'release-0.1'
+pi@raspberrypi:~/git/test10(release-0.1)
+</pre>
+このコマンドで、masterブランチとdevelopブランチが生成。
+</div>
+
+<h2>パッチ作業</h2>
+<div class="pp">
+<pre>
+pi@raspberrypi:~/git/test10(release-0.1)
+$ <span class="spanCaution">echo ttt >> gg.txt</span>
+pi@raspberrypi:~/git/test10(release-0.1)
+$ <span class="spanCaution">echo ttt >> g.txt</span>
+pi@raspberrypi:~/git/test10(release-0.1)
+$ <span class="spanCaution" style="font-size:25px;">bump-patch.sh </span>
+?You are commiting new patch version OK?
+On branch release-0.1
+Your branch is up-to-date with 'origin/release-0.1'.
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git checkout -- <file>..." to discard changes in working directory)
+
+	modified:   g.txt
+	modified:   gg.txt
+
+no changes added to commit (use "git add" and/or "git commit -a")
+Enter files to add:<span class="spanCaution">g.txt gg.txt</span>
+Enter Description:<span class="spanCaution">Modify</span>
+❯ Current version: 0.1.3
+❯ Latest commit hash: ebf4226
+? Enter a version number [0.1.4]: 
+❯ Will set new version to be 0.1.4
+❯ Pushing new version to the origin...
+[release-0.1 41e51f6] Bump version to 0.1.4.
+ 4 files changed, 9 insertions(+), 1 deletion(-)
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+Counting objects: 5, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (5/5), 447 bytes | 0 bytes/s, done.
+Total 5 (delta 1), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test10.git
+   ebf4226..41e51f6  release-0.1 -> release-0.1
+❯ Finished.
+pi@raspberrypi:~/git/test10(release-0.1)
+$ <span class="spanCaution">git log</span>
+commit 41e51f6e9a6c9d142719e6a7d4ebf6787376c13e
+Author: garameki <gomokumeshinomoto@gmail.com>
+Date:   Mon Dec 3 20:33:27 2018 +0900
+
+    Bump version to 0.1.4.
+    
+    Modify
+    g.txt gg.txt
+
+...............
+
+</pre>
+</div>
+
+<h2>マイナーバージョンアップ</h2>
+<div class="pp">
+<pre>
+pi@raspberrypi:~/git/test10(release-0.1)
+$ <span class="spanCaution" style="font-size:25px;">bump-minor.sh </span>
+On branch release-0.1
+Your branch is up-to-date with 'origin/release-0.1'.
+nothing to commit, working tree clean
+ YOU ARE CREATING A NEW RELEASE BRANCH OK?
+ Current version: 0.1.4
+ Latest commit hash: 41e51f6
+ Enter a version number [0.2]:
+Will create new release branch to be release-0.2
+Switched to a new branch 'release-0.2'
+ Now you can make adjustments to CHANGELOG.md. Then press enter to continue.
+
+ creating new version release branch to the origin...
+[release-0.2 af21e08] Create new release-0.2 branch
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">********</span>
+Counting objects: 4, done.
+Delta compression using up to 4 threads.
+Compressing objects: 100% (3/3), done.
+Writing objects: 100% (4/4), 417 bytes | 0 bytes/s, done.
+Total 4 (delta 0), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test10.git
+ * [new branch]      release-0.2 -> release-0.2
+Branch release-0.2 set up to track remote branch release-0.2 from origin.
+Switched to branch 'master'
+Your branch is based on 'origin/master', but the upstream is gone.
+  (use "git branch --unset-upstream" to fixup)
+Merge made by the 'recursive' strategy.
+ CHANGELOG.md | 3 +++
+ VERSION      | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*******</span>
+Counting objects: 1, done.
+Writing objects: 100% (1/1), 232 bytes | 0 bytes/s, done.
+Total 1 (delta 0), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test10.git
+ * [new branch]      master -> master
+Switched to branch 'develop'
+Merge made by the 'recursive' strategy.
+ CHANGELOG.md | 3 +++
+ VERSION      | 2 +-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+Counting objects: 1, done.
+Writing objects: 100% (1/1), 232 bytes | 0 bytes/s, done.
+Total 1 (delta 0), reused 0 (delta 0)
+To 192.168.3.8:/home/git/test10.git
+ * [new branch]      develop -> develop
+Switched to branch 'release-0.2'
+Your branch is up-to-date with 'origin/release-0.2'.
+pi@raspberrypi:~/git/test10(release-0.2)
+</pre>
+</div>
+
+<h2>コード</h2>
+<div class="pp">
+<h3>bump-begin.sh</h3>
+
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+<h2></h2>
+<div class="pp">
+</div>
+
+
+	<body style="background-color:black;">
+		<!–右からの吹き出し–>
+		<div class="kaiwa"">
+			<figure class="kaiwa-img-right">
+				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
+				<figcaption class="kaiwa-img-description">
+					USAKU
+				</figcaption>
+			</figure>
+			<div class="kaiwa-text-left">
+				<p class="kaiwa-text">
+					HELLO
+				</p>
+			</div>
+		</div>
+		<!–左からの吹き出し–>
+			<div class="kaiwa">
+				<figure class="kaiwa-img-left">
+					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
+					<figcaption class="kaiwa-img-description">
+						USAKU
+					</figcaption>
+				</figure>
+				<div class="kaiwa-text-right">
+					<p class="kaiwa-text">
+						HELLO HERO
+					</p>
+				</div>
+		</div>
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
