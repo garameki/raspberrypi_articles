@@ -1,0 +1,57 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="sshでログインして起動したプロセスをログアウト時も起動させたままにしておく方法">
+<title>sshでプロセス軌道|がらめきドットコム</title>
+</head><body id="body">
+<h1>SSHでプロセスを起動したままにしておく方法</h1>
+<span class="spanExplain">ドンピシャの参考サイト</span>
+<ul>
+<li><a href="https://qiita.com/tsuyoshi_cho/items/bb385304481ea8fd3ce1">sshでのプロセス継続をnohupで行う際のメモ</a>
+</ul>
+シェルによってもやり方が変わる。自分はbash
+<h2>やってみる</h2>
+<div class="pp">
+<pre>
+C:\Users\usaku&gt;<span class="spanCaution">ssh pi@192.168.3.6</span>
+pi@192.168.3.6's password:<span class="spanCaution">******</span>
+Linux raspberrypi 4.14.71-v7+ #1145 SMP Fri Sep 21 15:38:35 BST 2018 armv7l
+
+The programs included with the Debian GNU/Linux system are free software;
+the exact distribution terms for each program are described in the
+individual files in /usr/share/doc/*/copyright.
+
+Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
+permitted by applicable law.
+Last login: Tue Dec  4 16:14:09 2018 from 192.168.3.2
+pi@raspberrypi:~
+$ <span class="spanCaution">cdht</span>
+合計 48
+drwxr-xr-x 3 pi pi 4096 12月  4 16:17 .
+drwxr-xr-x 3 pi pi 4096 11月 29 20:51 ..
+drwxr-xr-x 8 pi pi 4096 12月  4 15:29 .git
+-rw-r--r-- 1 pi pi 1203 11月 29 20:59 .gitignore
+-rw-r--r-- 1 pi pi 4110 12月  4 15:29 CHANGELOG.md
+-rw-r--r-- 1 pi pi 1065 11月 29 20:59 LICENSE
+-rw-r--r-- 1 pi pi  296 12月  1 17:17 README.md
+-rw-r--r-- 1 pi pi    6 12月  4 15:29 VERSION
+-rw-r--r-- 1 pi pi 2693 12月  4 15:29 ht16k33.py
+-rw------- 1 pi pi   26 12月  4 16:16 nohup.out
+-rwx------ 1 pi pi  133 11月 21 22:18 seg.sh
+pi@raspberrypi:~/src/i2c/i2c_4dig7seg(release-1.2)
+$ <span class="spanCaution" style="font-size:30px;">nohup python3 ht16k33.py 1 &lt; /dev/null 2&gt;&1 /dev/null &</span>
+[1] 32286
+nohup: 出力を 'nohup.out' に追記します
+pi@raspberrypi:~/src/i2c/i2c_4dig7seg(release-1.2)
+$ <span class="spanCaution">exit</span>
+ログアウト
+Connection to 192.168.3.6 closed.
+
+</pre>
+<img src="ssh2_1.jpg"><br>
+ログアウトしても、時計は動き続けました。
+
+</div>
+
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
