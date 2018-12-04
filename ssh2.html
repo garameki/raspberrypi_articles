@@ -24,19 +24,7 @@ Debian GNU/Linux comes with ABSOLUTELY NO WARRANTY, to the extent
 permitted by applicable law.
 Last login: Tue Dec  4 16:14:09 2018 from 192.168.3.2
 pi@raspberrypi:~
-$ <span class="spanCaution">cdht</span>
-合計 48
-drwxr-xr-x 3 pi pi 4096 12月  4 16:17 .
-drwxr-xr-x 3 pi pi 4096 11月 29 20:51 ..
-drwxr-xr-x 8 pi pi 4096 12月  4 15:29 .git
--rw-r--r-- 1 pi pi 1203 11月 29 20:59 .gitignore
--rw-r--r-- 1 pi pi 4110 12月  4 15:29 CHANGELOG.md
--rw-r--r-- 1 pi pi 1065 11月 29 20:59 LICENSE
--rw-r--r-- 1 pi pi  296 12月  1 17:17 README.md
--rw-r--r-- 1 pi pi    6 12月  4 15:29 VERSION
--rw-r--r-- 1 pi pi 2693 12月  4 15:29 ht16k33.py
--rw------- 1 pi pi   26 12月  4 16:16 nohup.out
--rwx------ 1 pi pi  133 11月 21 22:18 seg.sh
+$ <span class="spanCaution">cd ~/src/i2c/i2c_4dig7seg/</span>
 pi@raspberrypi:~/src/i2c/i2c_4dig7seg(release-1.2)
 $ <span class="spanCaution" style="font-size:30px;">nohup python3 ht16k33.py 1 &lt; /dev/null 2&gt;&1 /dev/null &</span>
 [1] 32286
@@ -48,7 +36,21 @@ Connection to 192.168.3.6 closed.
 
 </pre>
 <img src="ssh2_1.jpg"><br>
-ログアウトしても、時計は動き続けました。
+ログアウトしても、時計は動き続けました。<br>
+<span style="color:gold;">ちなみに、上のやり方でも、下のやり方でも、nohupは動きましたが、sshを利用している時は、下のやり方の方がうまくいくような気がします。</span><br>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="http://d.hatena.ne.jp/omiyan/20101227/1293468082">Linuxで現在使っているシェルを確認するときのコマンド</a>
+</ul>
+<span class="spanExplain">自分のシェルを確認してみる</span>
+<pre>
+$ <span class="spanCaution">cat /etc/shells</span>
+# /etc/shells: valid login shells
+/bin/sh
+/bin/dash
+/bin/bash
+/bin/rbash
+</pre>
 
 </div>
 
@@ -57,9 +59,34 @@ Connection to 192.168.3.6 closed.
 <div class="pp">
 もし、サーバーを立ち上げようとして、<br>
 Address already in use<br>
-というエラーが出た場合にはプロセスを見つけてkillする。
+というエラーが出た場合にはプロセスを見つけてkillしてから、再実行する。
 <span class="spanExplain">実行の様子</span>
 <pre>
+pi@raspberrypi:~/git/sockets(master)
+$ <span class="spanCaution">nohup python websocket-server.py 8801 > dd > ddd < /dev/null &</span>
+[2] 26936
+nohup: 標準エラー出力を標準出力にリダイレクトします
+pi@raspberrypi:~/git/sockets(master)
+$ <span class="spanCaution">cat dd</span>
+[2]+  終了 1                nohup python websocket-server.py 8801 > dd > ddd < /dev/null
+pi@raspberrypi:~/git/sockets(master)
+$ <span class="spanCaution">cat ddd</span>
+port=8801
+Traceback (most recent call last):
+  File "websocket-server.py", line 185, in <module>
+    HubServer(port,'garameki.com',logging.INFO)
+  File "websocket-server.py", line 137, in __init__
+    server = WebsocketServer(PORT,HOST,LOGGING)
+  File "/home/pi/.local/lib/python2.7/site-packages/websocket_server/websocket_server.py", line 123, in __init__
+    TCPServer.__init__(self, (host, port), WebSocketHandler)
+  File "/usr/lib/python2.7/SocketServer.py", line 417, in __init__
+    self.server_bind()
+  File "/usr/lib/python2.7/SocketServer.py", line 431, in server_bind
+    self.socket.bind(self.server_address)
+  File "/usr/lib/python2.7/socket.py", line 228, in meth
+    return getattr(self._sock,name)(*args)
+socket.error: [Errno 98] <span class="spanGreen" style="font-size:25px;">Address already in use</span>
+pi@raspberrypi:~/git/sockets(master)
 $ <span class="spanCaution" style="font-size:25px;">ps ax</span>
   PID TTY      STAT   TIME COMMAND
     1 ?        Ss     0:02 /sbin/init
@@ -75,13 +102,15 @@ $ <span class="spanCaution" style="font-size:25px;">ps ax</span>
 27311 ?        I      0:00 [kworker/1:2]
 27677 pts/0    R+     0:00 ps ax
 pi@raspberrypi:~/git/sockets(master)
-$ <span class="spanCaution">kill 2855</span>
+$ <span class="spanCaution" style="font-size:25px;">kill 2855</span>
 pi@raspberrypi:~/git/sockets(master)
 $ <span class="spanCaution">nohup python websocket-server.py 8801 > dd > ddd < /dev/null &</span>
 [2] 28422
 nohup: 標準エラー出力を標準出力にリダイレクトします
 
 </pre>
+このプログラムは画像の送受信を行うソケットサーバーなので、トップページで確認した。(送信クライアントも接続した後に)
+
 </div>
 
 
