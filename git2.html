@@ -512,6 +512,12 @@ fi
 
 <h2>originのmasterブランチだけを残し削除、しかも、任意のコミットにロールバックするshell script</h2>
 <span style="font-size:30px;color:gold;">危険</span><br>
+<ul>
+<li>ローカルもリモートもmasterブランチだけしか残りません
+<li>tagはすべて削除されます
+<li>コミットは指定したコミットより先のコミットは削除されます
+</ul>
+
 <h3>実行の様子</h3>
 <pre>
 pi@raspberrypi:~/src/spi/max31856(master)
