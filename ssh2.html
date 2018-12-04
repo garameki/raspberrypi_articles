@@ -53,5 +53,37 @@ Connection to 192.168.3.6 closed.
 </div>
 
 
+<h2>ポートが既に使われている場合</h2>
+<div class="pp">
+もし、サーバーを立ち上げようとして、<br>
+Address already in use<br>
+というエラーが出た場合にはプロセスを見つけてkillする。
+<span class="spanExplain">実行の様子</span>
+<pre>
+$ <span class="spanCaution" style="font-size:25px;">ps ax</span>
+  PID TTY      STAT   TIME COMMAND
+    1 ?        Ss     0:02 /sbin/init
+    2 ?        S      0:00 [kthreadd]
 
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+....
+
+<span class="spanGreen" style="font-size:25px;"> 2855 ?        S      0:13 python3 websocket-server.py 8801 /dev/null</span>
+....
+
+26926 ?        I      0:00 [kworker/2:1]
+26927 pts/0    Sl     0:00 python websocket-server.py 9801
+27311 ?        I      0:00 [kworker/1:2]
+27677 pts/0    R+     0:00 ps ax
+pi@raspberrypi:~/git/sockets(master)
+$ <span class="spanCaution">kill 2855</span>
+pi@raspberrypi:~/git/sockets(master)
+$ <span class="spanCaution">nohup python websocket-server.py 8801 > dd > ddd < /dev/null &</span>
+[2] 28422
+nohup: 標準エラー出力を標準出力にリダイレクトします
+
+</pre>
+</div>
+
+
+
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181204">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
