@@ -510,5 +510,157 @@ fi
 </pre>
 </div>
 
+<h2>originのmasterブランチだけを残し削除、しかも、任意のコミットにロールバックするshell script</h2>
+<span style="font-size:30px;color:gold;">危険</span><br>
+<h3>実行の様子</h3>
+<pre>
+pi@raspberrypi:~/src/spi/max31856(master)
+$ <span class="spanCaution">git branch -r</span>
+  origin/develop
+  origin/master
+  origin/release-1.0
+  origin/release-2.0
+  raspi/develop
+  raspi/master
+  raspi/release-0.1
+  raspi/release-1
+  raspi/release-1.0
+pi@raspberrypi:~/src/spi/max31856(master)
+$ <span class="spanCaution">deletebranchtag.sh</span>
+Already on 'master'
+Your branch is ahead of 'origin/master' by 2 commits.
+  (use "git push" to publish your local commits)
+git branch -D develop
+Deleted branch develop (was eb862e3).
+git branch -D release-1.0
+Deleted branch release-1.0 (was 7f9145a).
+git branch -D release-2.0
+Deleted branch release-2.0 (was 0ef7a34).
+Note: checking out '72e599'.
+
+You are in 'detached HEAD' state. You can look around, make experimental
+changes and commit them, and you can discard any commits you make in this
+state without impacting any branches by performing another checkout.
+
+If you want to create a new branch to retain commits you create, you may
+do so (now or later) by using -b with the checkout command again. Example:
+
+  git checkout -b <new-branch-name>
+
+HEAD is now at 72e5993... Add method version 	modified:   max31856.py
+Switched to a new branch 'master02900141-temporary'
+Deleted branch master (was eb862e3).
+Switched to a new branch 'master'
+Deleted branch master02900141-temporary (was 72e5993).
+origin/develop is about to delete from remote repository. OK?[yes]<span class="spanCaution">yes</span>
+
+git push --delete origin develop
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+To 192.168.3.8:/home/git/spi_max31856.git
+ - [deleted]         develop
+
+origin/release-1.0 is about to delete from remote repository. OK?[yes]<span class="spanCaution">yes</span>
+
+git push --delete origin release-1.0
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+To 192.168.3.8:/home/git/spi_max31856.git
+ - [deleted]         release-1.0
+origin/release-2.0 is about to delete from remote repository. OK?[yes]<span class="spanCaution">yes</span>
+
+git push --delete origin release-2.0
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+To 192.168.3.8:/home/git/spi_max31856.git
+ - [deleted]         release-2.0
+
+
+
+
+
+1.0.0 v1.0.0 v2.0.0
+git tag -d 1.0.0
+Deleted tag '1.0.0' (was 88ea4aa)
+git tag -d v1.0.0
+Deleted tag 'v1.0.0' (was 801e1ad)
+git tag -d v2.0.0
+Deleted tag 'v2.0.0' (was b9445fb)
+git push -f origin master
+Enter passphrase for key '/home/pi/.ssh/id_rsa': <span class="spanCaution">*****</span>
+Everything up-to-date
+pi@raspberrypi:~/src/spi/max31856(master)
+
+</pre>
+<h3>コード</h3>
+<span class="spanExplain">deletebranchtag.sh</span>
+<pre>
+#!/bin/bash
+
+
+
+
+#master branch以外削除(ローカル) delete all branches except for master in local repository
+
+git checkout master
+LIST=$(git branch | tr -d '* ')
+for ele in ${LIST//* / }; do
+	if [ $ele != "master" ]; then
+		echo "git branch -D $ele"
+		git branch -D $ele
+	fi
+done
+git checkout 72e599 #<<<<<<<<<<<<<<<<<<<巻き戻したいコミットハッシュ　 full hash of commit as long as possible you want to roll back 
+git checkout -b master02900141-temporary
+git branch -D master
+git checkout -b master
+git branch -D master02900141-temporary
+
+
+
+
+
+
+
+#master branch以外削除(リモート) delete all branches except for master in remote repository
+
+LIST=$(git branch -r)
+for ele in ${LIST// / }; do
+	if [[ ${ele} =~ origin/master ]] || [[ ${ele} =~ raspi/ ]]; then
+		echo ""
+	else
+		#echo ${ele//\// }
+		echo -ne "$ele is about to delete from remote repository. OK?[yes]"
+		read ANS
+		if [ $ANS = "yes" ]; then
+			echo ""
+			echo "git push --delete ${ele//\// }"
+			git push --delete  ${ele//\// }
+		fi
+	fi
+done
+
+
+
+
+
+
+#全タグ削除 delete all tags
+
+TAGS=()
+LIST=$(git tag)
+echo $LIST
+for ele in ${LIST// / }; do
+	echo "git tag -d $ele"
+	git tag -d $ele
+done
+
+
+
+
+#リモートリポジトリにも反映 push edited histroy to remote repository
+
+echo "git push -f origin master"
+git push -f origin master
+
+</pre>
+
 
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181203">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
