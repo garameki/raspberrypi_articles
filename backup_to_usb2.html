@@ -4,6 +4,19 @@
 <title>マウントしてあるUSBメモリにバックアップ|がらめきドットコム</title>
 </head><body id="body">
 <h1>マウントしてあるUSBメモリにバックアップ</h1>
+マウントポイントを固定してバックアップをしていると、マウントポイントがずれている時があって、バックアップしているつもりが、ただのコピーになっていることがある。
+
+
+<h2>こういうこと</h2>
+<div class="pp">
+<pre>
+$ <span class="spanCaution">ls /media/pi</span>
+SETTINGS  <span style="background-color:red;color:black;">TOSHIBA</span>  <span style="background-color:red;color:black;">TOSHIBA1</span>  mount  mount15
+$ <span class="spanCaution">mount -l | grep TOSHIBA</span>
+/dev/sda1 on /media/pi/<span style="background-color:red;color:black">TOSHIBA1</span> type ext4 (rw,nosuid,nodev,relatime,data=ordered,uhelper=udisks2) [TOSHIBA]
+</pre>
+本当はTOSHIBAがマウントポイントのはずなのだが、TOSHIBAが既に存在しているために、マウントポイントがTOSHIBA1になってしまった例
+</div>
 
 <h2>コード</h2>
 <div class="pp">
