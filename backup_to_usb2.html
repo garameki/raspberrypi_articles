@@ -1,43 +1,70 @@
 <html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
 <script type="application/javascript" src="script.js"></script>
-<meta name="description" content="">
-<title></title>
+<meta name="description" content="マウントしてあるUSBメモリにバックアップ">
+<title>マウントしてあるUSBメモリにバックアップ|がらめきドットコム</title>
 </head><body id="body">
-<h1></h1>
+<h1>マウントしてあるUSBメモリにバックアップ</h1>
 
-<h2></h2>
+<h2>コード</h2>
 <div class="pp">
+<span class="spanExplain">backup.sh</span>
+<pre>
+<span class="spanGreen">LABEL=TOSHIBA           #USBメモリのラベル名です
+BACKNAME=backup20181129 #任意の名前
+
+getPATH() {
+        echo ${3}
+}
+
+aa=$(mount -l | grep "\[$LABEL\]")
+bb=$(getPATH $aa)
+
+if [ $bb ]; then
+        USB=$bb
+        USBBACK=$USB/$BACKNAME
+        echo $USBBACK
+</span>
+        sudo mkdir -p $USBBACK/pi
+        sudo rsync -av /home/pi/.ssh $USBBACK/pi
+        sudo rsync -av /home/pi/.vimrc $USBBACK/pi
+        sudo rsync -av /home/pi/.bashrc $USBBACK/pi
+        sudo rsync -av /home/pi/.bash_aliases $USBBACK/pi
+        sudo rsync -av /home/pi/.gitconfig $USBBACK/pi
+        sudo rsync -av /home/pi/backup.sh $USBBACK/pi
+        sudo rsync -av /home/pi/packages  $USBBACK/pi
+        sudo rsync -av /home/pi/public $USBBACK/pi
+        sudo rsync -av --delete /home/pi/bin $USBBACK/pi
+        sudo rsync -av --delete /home/pi/git $USBBACK/pi
+        sudo rsync -av --delete /home/pi/www $USBBACK/pi
+        sudo rsync -av --delete /home/pi/src $USBBACK/pi
+        sudo rsync -av --delete /home/pi/stream  $USBBACK/pi
+        sudo mkdir -p $USBBACK/etc
+        sudo rsync -av /etc/ntp.conf $USBBACK/etc
+        sudo rsync -av --delete /etc/apache2 $USBBACK/etc
+        sudo rsync -av /etc/fstab $USBBACK/etc
+        sudo rsync -av /etc/crontab $USBBACK/etc
+        sudo rsync -av /etc/hosts $USBBACK/etc
+        sudo rsync -av --delete /etc/ssl $USBBACK/etc
+        sudo rsync -av --delete /etc/letsencrypt $USBBACK/etc
+        sudo mkdir -p $USBBACK/var
+        sudo mkdir -p $USBBACK/var/www
+        sudo mkdir -p $USBBACK/var/www/html
+        sudo rsync -av --delete /var/www/html/ $USBBACK/var/www/html
+        sudo mkdir -p $USBBACK/var
+        sudo mkdir -p $USBBACK/var/log
+        sudo mkdir -p $USBBACK/var/log/apache2
+        sudo rsync -av --delete /var/log/apache2/ $USBBACK/var/log/apache2
+        sudo mkdir -p $USBBACK/var/spool
+        sudo mkdir -p $USBBACK/var/spool/cron
+        sudo rsync -av --delete /var/spool/cron/ $USBBACK/var/spool/cron
+        sudo mkdir -p $USBBACK/boot
+        sudo rsync -av /boot/config.txt $USBBACK/boot
+<span class="spanGreen">else
+        echo "NOT MOUNT USB MEMORY!!!"
+fi</span>
+</pre>
+緑色の部分が書き換えたところ。<br>
 </div>
 
-
-	<body style="background-color:black;">
-		<!–右からの吹き出し–>
-		<div class="kaiwa"">
-			<figure class="kaiwa-img-right">
-				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
-				<figcaption class="kaiwa-img-description">
-					USAKU
-				</figcaption>
-			</figure>
-			<div class="kaiwa-text-left">
-				<p class="kaiwa-text">
-					HELLO
-				</p>
-			</div>
-		</div>
-		<!–左からの吹き出し–>
-			<div class="kaiwa">
-				<figure class="kaiwa-img-left">
-					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
-					<figcaption class="kaiwa-img-description">
-						USAKU
-					</figcaption>
-				</figure>
-				<div class="kaiwa-text-right">
-					<p class="kaiwa-text">
-						HELLO HERO
-					</p>
-				</div>
-		</div>
-
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181208">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
