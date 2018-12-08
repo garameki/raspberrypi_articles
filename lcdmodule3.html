@@ -1,43 +1,89 @@
 <html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
 <script type="application/javascript" src="script.js"></script>
-<meta name="description" content="">
-<title></title>
+<meta name="description" content="LCDモジュールにMAX31856の情報を表示させた">
+<title>LCDにMAX31856の情報を表示させた|がらめきドットコム</title>
 </head><body id="body">
-<h1></h1>
-
-<h2></h2>
+<h1>LCDにMAX31856の情報を表示させた</h1>
 <div class="pp">
+前回、文字列をLCDに表示することができるようになったので、今度は、LCDにリアルタイムな情報を表示させてみる。<br>
+MAX31856の情報をLCDに表示させる。<br>
+<img src="lcdmodule3_1.jpg">
+</div>
+<h2>max31856.pyにLCD用のfunctionを追加</h2>
+<div class="pp">
+<pre>
+def analyze_fault_for_LCD(self,code):
+	moji = ""
+	if code &amp; 1:moji +="ダンセン　"
+	if code &amp; 2:moji += "デンアツイジョウ　"
+	if code &amp; 4:moji +="オンドカゲン　"
+	if code &amp; 8:moji +="オンドジョウゲン　"
+	if code &amp; 16:moji +="レイセッテンオンドシタスギ　"
+	if code &amp; 32:moji +="レイセッテンオンドウエスギ　"
+	if code &amp; 64:moji +="レイセッテン　シヨウハンイゴエ　"
+	if code &amp; 128:moji +="ネツセッテン　シヨウハンイゴエ"
+	return moji
+</pre>
 </div>
 
+<h2>呼び出し側</h2>
+<div class="pp">
+<pre>
+import math
+import sys
+sys.path.append("/home/pi/src/sys_kama")
+from ht16k33 import Ht16k33
+<span class="spanGreen">from max31856 import Max31856
+from acm1602 import ACM1602</span>
+import time
+import threading
 
-	<body style="background-color:black;">
-		<!–右からの吹き出し–>
-		<div class="kaiwa"">
-			<figure class="kaiwa-img-right">
-				<img src="hyou_black.jpg" width="50px" alt="no-img2″>
-				<figcaption class="kaiwa-img-description">
-					USAKU
-				</figcaption>
-			</figure>
-			<div class="kaiwa-text-left">
-				<p class="kaiwa-text">
-					HELLO
-				</p>
-			</div>
-		</div>
-		<!–左からの吹き出し–>
-			<div class="kaiwa">
-				<figure class="kaiwa-img-left">
-					<img kind="icon" src="hyou_left_black.jpg" alt="no-img2″>
-					<figcaption class="kaiwa-img-description">
-						USAKU
-					</figcaption>
-				</figure>
-				<div class="kaiwa-text-right">
-					<p class="kaiwa-text">
-						HELLO HERO
-					</p>
-				</div>
-		</div>
+def mes_pri(spi,ht,gyou):
+        temps = spi.read()
+        #print(temps)
+        if temps["FAULT"] == 0:
+                temp = temps["HJ"]*0.0625
+                tempHT =str(math.floor(temp))
+                tempACM = str(temp)
+        else:
+#               spi.analyze_fault(temps["FAULT"])
+       <span class="spanGreen">         tempACM = spi.analyze_fault_for_LCD(temps["FAULT"])</span>
+                tempHT = "F-"+("0"+str(temps["FAULT"]))[-2:]
+        ht.print(tempHT,2)
+        if gyou == 1:
+                acm.line1()
+        elif gyou == 2:
+                acm.line2()
+<span class="spanGreen">        acm.sendMessage(tempACM)</span>
+        time.sleep(1)
+
+
+DEVICE_BUS = 1
+DEVICE_ADDR0 = 0x71
+DEVICE_ADDR1 = 0x70
+
+ht0 = Ht16k33(DEVICE_BUS,DEVICE_ADDR0)
+ht1 = Ht16k33(DEVICE_BUS,DEVICE_ADDR1)
+
+SPI = 0
+CE0 = 0
+CE1 = 1
+<span class="spanGreen">spi0 = Max31856(SPI,CE0)
+spi1 = Max31856(SPI,CE1)
+
+acm = ACM1602()
+acm.sendMessage("FAULT")
+acm.displayOnOffControl.set(acm.DisplayOnOffControl.DISPON_CURSOROFF_BLINKOFF)
+</span>
+while True:
+        mes_pri(spi0,ht0,1)
+        mes_pri(spi1,ht1,2)
+        time.sleep(1)
+
+</pre>
+max31856.pyにFAULTの文字列を用意させて、ACM1602.py側で、それを表示させている
+</div>
+<br><br>以上
+
 
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
