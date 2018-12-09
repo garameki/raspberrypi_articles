@@ -35,7 +35,7 @@ $ sudo vim /etc/systemd/system/hello.service
 </pre>
 <span class="spanExplain">/etc/systemd/system/hello.service</span>
 <pre>
-[Unit]                                                                                                                                                                                                                                   
+[Unit]
 Description=Hello daemon
 
 [Service]
@@ -178,7 +178,12 @@ WantedBy=multi-user.target
 
 </pre>
 エディタで、Restart=alwaysを消しておきます。<br>
-そして、リブートしてから、<br>
+そして、
+<span class="spanExplain">リブート</span>
+<pre>
+$ sudo reboot
+</pre>
+そして、ご丁寧にsudoをつけて、stop
 <pre>
 $ sudo systemctl stop hello
 </pre>
