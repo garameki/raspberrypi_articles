@@ -1,0 +1,156 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="daemonづくりに挑戦">
+<title>systemctlを使ったデーモン作成｜がらめきドットコム</title>
+</head><body id="body">
+<h1>systemctlを使ったデーモン作成</h1>
+<span class="spanExplain">参考リンク</span>
+<ul>
+<li><a href="https://qiita.com/DQNEO/items/0b5d0bc5d3cf407cb7ff">Systemdを使ってさくっと自作コマンドをサービス化してみる</a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+<h2>まね</h2>
+<div class="pp">
+<span class="spanExplain">自作コマンド</span>
+<pre>
+pi@raspberrypi:~
+$ vim hello.sh
+</pre>
+<span class="spanExplain">hello.sh</span>
+<pre>
+#!/bin/bash
+
+while true
+do
+        echo hello world >> /hello.log
+        sleep 5
+done
+</pre>
+<span class="spanExplain">ユニット作成</span>
+<pre>
+pi@raspberrypi:~
+$ sudo vim /etc/systemd/system/hello.service
+</pre>
+<span class="spanExplain">/etc/systemd/system/hello.service</span>
+<pre>
+[Unit]                                                                                                                                                                                                                                   
+Description=Hello daemon
+
+[Service]
+ExecStart=/home/pi/hello.sh
+Restart=always
+Type=simple
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+
+<span class="spanExplain">確認</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl list-unit-files --type=service | grep hello
+hello.service                          disabled 
+</pre>
+<span class="spanExplain">実行</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl isolate hello
+Failed to start hello.target: Operation refused, unit may not be isolated.
+See system logs and 'systemctl status hello.target' for details.
+</pre>
+失敗
+<span class="spanExplain">確認</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl status hello
+● hello.service - Hello daemon
+   Loaded: loaded (/etc/systemd/system/hello.service; disabled; vendor preset: enabled)
+   Active: inactive (dead)
+</pre>
+deadしてました。
+<span class="spanExplain">デーモン化を許可</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl enable /etc/systemd/system/hello.service
+Created symlink /etc/systemd/system/multi-user.target.wants/hello.service → /etc/systemd/system/hello.service.
+</pre>
+なんと、シンボリックリンクが貼られたではありませんか。<br>
+hello.serviceは、hello.service自身によって、Wantedされるのですか。
+<span class="spanExplain">isolateではなく、startで実行する</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl start hello
+pi@raspberrypi:~
+$ systemctl status hello
+● hello.service - Hello daemon
+   Loaded: loaded (/etc/systemd/system/hello.service; enabled; vendor preset: enabled)
+   Active: active (running) since Mon 2018-12-10 00:43:15 JST; 37s ago
+ Main PID: 8578 (hello.sh)
+   CGroup: /system.slice/hello.service
+           ├─8578 /bin/bash /home/pi/hello.sh
+           └─8601 sleep 5
+
+12月 10 00:43:15 raspberrypi systemd[1]: Started Hello daemon.
+</pre>
+動いたが、パスワードを求められてしまうのです。まあ、それは置いておいて、hello.logは、/に存在しました。
+<span class="spanExplain">hello.logを探す</span>
+<pre>
+pi@raspberrypi:~
+$ sudo find / | grep hello
+...
+/hello.log
+pi@raspberrypi:/
+$ cat hello.log
+hello world
+hello world
+hello world
+hello world
+...
+</pre>
+<span class="spanExplain">止める</span>
+<pre>
+
+pi@raspberrypi:/
+$ systemctl stop hello
+pi@raspberrypi:/
+$ systemctl status hello
+● hello.service - Hello daemon
+   Loaded: loaded (/etc/systemd/system/hello.service; enabled; vendor preset: enabled)
+   Active: inactive (dead) since Mon 2018-12-10 00:46:06 JST; 6min ago
+  Process: 8578 ExecStart=/home/pi/hello.sh (code=killed, signal=TERM)
+ Main PID: 8578 (code=killed, signal=TERM)
+
+12月 10 00:43:15 raspberrypi systemd[1]: Started Hello daemon.
+12月 10 00:46:06 raspberrypi systemd[1]: Stopping Hello daemon...
+12月 10 00:46:06 raspberrypi systemd[1]: Stopped Hello daemon.
+</pre>
+止まっています。
+</div>
+
+
+<h2>reboot</h2>
+<div class="pp">
+<pre>
+$systemctl reboot
+</pre>
+ともできるらしいが、
+<pre>
+$ sudo reboot
+</pre>
+する。
+</div>
+
+
+<h2>ログイン時のパスワード入力も省略するには</h2>
+<div class="pp">
+
+
+</div>
+
+
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
