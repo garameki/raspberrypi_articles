@@ -301,16 +301,11 @@ def answer(words):
                                 phrase = "今日は   "+MM+"がつ"+DD+"　"+dd+"曜日です。"
                         elif num == 4:
                                 nn = random.randint(0,4)
-                                if nn == 0:phrase = "　　　　われ思う、　　ゆえに、　　われあ
-り。　　　　　　　パスカル"
-                                elif nn == 1:phrase = "　　　　小さな成功の積み重ねだけが、大
-成功に導いてくれる"
-                                elif nn == 2:phrase = "　　　　自分を追い込んで、成果を残す。
-自分にプレッシャーを掛けなさい"
-                                elif nn == 3:phrase = "　　　　午前中の数分のトレーニングが脳
-を若返らせる。トレーニングを続けることで、老いた脳から若い脳へ。"
-                                elif nn == 4:phrase = "　　　　脳にとっての幸福は、学び続け、
-成長し続け、達成を繰り返すこと。"
+                                if nn == 0:phrase = "　　　　われ思う、　　ゆえに、　　われあり。　　　　　　　パスカル"
+                                elif nn == 1:phrase = "　　　　小さな成功の積み重ねだけが、大成功に導いてくれる"
+                                elif nn == 2:phrase = "　　　　自分を追い込んで、成果を残す。自分にプレッシャーを掛けなさい"
+                                elif nn == 3:phrase = "　　　　午前中の数分のトレーニングが脳を若返らせる。トレーニングを続けることで、老いた脳から若い脳へ。"
+                                elif nn == 4:phrase = "　　　　脳にとっての幸福は、学び続け、成長し続け、達成を繰り返すこと。"
                         cmd = '/home/pi/src/aquestalkpi/AquesTalkPi -s 100 "　　　{0}" | aplay'.format(phrase)
                         print('{0}'.format(phrase))
                         os.system(cmd)
