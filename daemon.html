@@ -135,22 +135,63 @@ $ systemctl status hello
 <pre>
 $systemctl reboot
 </pre>
-ともできるらしいが、
+ともできるかもしれないが、
 <pre>
 $ sudo reboot
 </pre>
 する。
+<span class="spanExplain">リブート後</span>
+<pre>
+pi@raspberrypi:~
+$ systemctl status hello
+<span class="spanGreen">● </span>hello.service - Hello daemon
+   Loaded: loaded (/etc/systemd/system/hello.service; enabled; vendor preset: en
+   Active: active (running) since Mon 2018-12-10 00:57:48 JST; 37s ago
+ Main PID: 302 (hello.sh)
+   CGroup: /system.slice/hello.service
+           ├─302 /bin/bash /home/pi/hello.sh
+           └─990 sleep 5
+
+12月 10 00:57:48 raspberrypi systemd[1]: Started Hello daemon.
+lines 1-9/9 (END)
+</pre>
+しかし、<span style="color:red;font-size:25px;font-weight:bold;">止められないの。このサービス。</span><br>
+
 </div>
 
+<h2>このサービスを止めるには</h2>
+<div calss="pp">
+悪意があるのかないのかわからないが、知らなければ、メモリリークしちゃう。<br>
+しかも、元のソースでは、1秒ごとに書き込まれていくのだから、焦るよね。<br>
+<span class="spanExplain">/etc/systemd/system/hello.service</span>
+<pre>
+[Unit]
+Description=Hello daemon
 
-<h2>ログイン時のパスワード入力も省略するには</h2>
-<div class="pp">
+[Service]
+ExecStart=/home/pi/hello.sh
+<s>Restart=always</s>
+Type=simple
 
+[Install]
+WantedBy=multi-user.target
 
+</pre>
+エディタで、Restart=alwaysを消しておきます。<br>
+そして、リブートしてから、<br>
+<pre>
+$ sudo systemctl stop hello
+</pre>
+で、止まってくれました。
 </div>
 
+<h2>あとがき</h2>
+<div calss="pp">
+リブートしたときは、ログインパスワードを聞かれずに、サービスが、実行されました。しかし、止めようと思ったときに、パスワード画面もGUI上に残ってしまうなど、止めることが出来ない状況になり、再びhello.serviceを編集して、Restart=alwaysを消去する羽目になりました。インターネット上にあるやりかたを、そのまま鵜呑みにするのは、怖いことですね。<br>
+デーモン怖い。<br>
+</div>
 
 
 
 <br><br>以上
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181210">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
