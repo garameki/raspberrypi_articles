@@ -1,0 +1,345 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="ラズパイでGoogle Home">
+<title>ラズパイでGoogle Home｜がらめきドットコム</title>
+</head><body id="body">
+<h1>ラズパイでGoogle Home</h1>
+<div class="pp">
+みんなやっているので、やってみた。<br>
+<span class="spanExplain">使ったもの</span>
+<ul>
+<li>Julius
+<li>AquesTalkPi
+<li>USBマイク
+<li>ジャックにつなぐスピーカー
+</ul>
+</div>
+
+<h2>Julius</h2>
+<div class="pp">
+<h3>言葉の準備</h3>
+<div class="pp">
+<span class="spanExplain">vim google.txt</span>
+<pre>
+日付    きょうはなんにち
+日付    きょうのひづけは
+日付    きょうのひづけ
+日付    なんにちだっけ
+日付    なんにち
+偉人の言葉      いじんのことば
+</pre>
+同じ意味は同じ言葉に翻訳してしまう
+<br><br>
+<span class="spanExplain">bash conv.sh</span>
+<pre>
+#!/bin/bash
+
+STEM=google
+
+iconv -f utf8 -t eucjp $STEM.txt | yomi2voca.pl | iconv -f eucjp -t utf8 &gt;&gt; $STEM.voca
+~
+</pre>
+google.txtの右のカラムを音素にしてくれて、次に編集するgoogle.vocaの下に追記する
+<br><br>
+<span class="spanExplain">vim google.voca</span>
+<pre>
+日付    ky o u h a n a N n i ch i
+日付    ky o u n o h i z u k e h a
+日付    ky o u n o h i z u k e
+日付    n a N n i ch i d a q k e
+日付    n a N n i ch i
+偉人の言葉      i j i N n o k o t o b a
+</pre>
+google.vocaファイルに追加された音素<br>
+これを、ファイル内に挿入<br>
+<span class="spanExplain">vim google.vocaつづき</span>
+<pre>
+% GREETING
+OK      o: k e:
+OK      o q k e:
+無視    d a m a r e
+無視    o i
+無視    o m a e
+無視    k u d a r a n a i
+無視    k u d a r a n e:
+無視    sh o u m o n e:
+無視    n a N d a k o ry a
+無視    sh i z u k a n i sh i r o
+無視    u r u s a i
+無視    u N k o
+感謝    a r i g a t o u
+感謝    a r i g a t o
+感謝    a r i g a t o o
+感謝    a N g a t o u
+感謝    a N g a t o
+感謝    a N g a t o o
+わかった        w a k a q t a
+そうか  s o u k a
+用ない  y o u w a n a i y o
+呼んでない      y o N d e n a i
+呼んでない      y o N d e n a i y o
+呼んでない      y o N d e m a s e N
+呼んでない      y o N d e m a s e N y o
+
+
+% OBJECT
+仮面ライダー    k a m e N r a i d a:
+グーグル        g u: g u r u
+ワングル        w a N g u r u
+温度    n a N d o
+温度    o N d o
+温度    k i o N
+温度    i m a n a N d o
+時刻    n a N j i
+時刻    j i k a N
+時刻    j i k o k u
+時刻    i m a n a N j i
+時刻    j i k a N o sh i e t e
+<span class="spanGreen">日付    ky o u h a n a N n i ch i
+日付    ky o u n o h i z u k e h a
+日付    ky o u n o h i z u k e
+日付    n a N n i ch i d a q k e
+日付    n a N n i ch i
+偉人の言葉      i j i N n o k o t o b a</span>
+
+
+% NS_B
+[s]   silB
+
+% NS_E
+[/s]  silE
+</pre>
+<br><br>
+<span class="spanExplain">vim gogle.grammar</span>
+<pre>
+S : NS_B BUN NS_E
+BUN : GREETING
+BUN : OBJECT
+BUN : GREETING OBJECT
+</pre>
+文法を設定
+</div>
+<br>
+<h3>Julius実行</h3>
+<div class="pp">
+<span class="spanExplain">bash julius-module.sh</span>
+<pre>
+export ALSADEV="plughw:1,0"
+
+GRAM=google
+mkdfa.pl $GRAM
+DICT=~/src/julius_google/julius-dict/am-gmm.jconf
+julius -C $DICT -gram $GRAM -nostrip -module 10500
+</pre>
+ALSADEVにマイクの設定をする。<br>
+google.vocaをもとに、google.dfa,google.term,google.dictが作成される。<br>
+ここで使うオプションが理解できれば、もっとおもしろくなりそう。<br>
+<br>
+
+</div>
+</div>
+
+<h2>Juliusの聞いた言葉を拾う</h2>
+<div class="pp">
+<span class="spanExplain">python3 hear.py</span>
+<pre>
+import subprocess
+import julius_cli
+from datetime import datetime
+from time import sleep
+
+import codecs
+
+def hear(words):
+        print(words)
+        file = codecs.open("hear.txt","w","shift_jis")
+        i=0
+        for i in range(len(words)):
+                file.write(words[i])
+                file.write("\n")
+        file.close()
+        return True
+
+greet_morning = "おはようございます"
+greet_day     = "こんにちは"
+greet_evening = "こんばんは"
+
+words_init = []
+
+iHour = int(datetime.now().strftime("%H"))
+if   iHour &lt; 3:words_init.append(greet_evening)
+elif iHour &lt; 9:words_init.append(greet_morning)
+elif iHour &lt;17:words_init.append(greet_day)
+elif iHour &lt;24:words_init.append(greet_evening)
+
+hear(words_init)
+sleep(2)
+
+julius_cli.julius_connect()
+sleep(1)
+julius_cli.julius_recv(hear)
+</pre>
+<br><br>
+<span class="spanExplain">hear.txt</span>
+<pre>
+このファイルに、hear.pyが聞いたJuliusの言葉が書き込まれます
+</pre>
+</div>
+
+<h2>聞いた言葉に反応して答える</h2>
+<div class="pp">
+文字を言葉にするために、AquesTalkPiを用いて再生しています<br>
+<span class="spanExplain">python3 answer.py</span>
+<pre>
+import subprocess
+import julius_cli
+import random
+from datetime import datetime
+import locale
+from time import sleep
+import os
+import codecs
+import math
+import max31856
+max = max31856.Max31856(0,0)
+
+phrases = [
+        [["偉人の言葉"],"はい、",4],
+        [["日付"],"えーと、",3],
+        [["呼んでない"],"すみません",0],
+        [["用ない"],"そうですか",0],
+        [["わかった"],"どういたしまして",0],
+        [["そうか"],"はい",0],
+        [["OK"],"どういたしまして、",0],
+        [["感謝"],"どういたしまして、",0],
+        [["OK","グーグル"],"なにか御用でしょうか？",0],
+        [["OK","仮面ライダー"],"わたしは、仮面ライダーではありません。",0],
+        [["OK","ワングル"],"わんわん",0],
+        [["くだらない"],"くだらなくて、申し訳ありません。",0],
+        [["温度"],"少々お待ちください",1],
+        [["時刻"],"えーと、",2],
+]
+
+def conversation(words):
+        global phrases
+        for sets in phrases:
+                bunsetus = sets[0]
+                if len(bunsetus)==len(words):
+                        flag = True
+                        for i in range(len(bunsetus)):
+                                if words[i]==bunsetus[i]:
+                                        pass
+                                else:
+                                        flag = False
+                                        break
+                        if flag:
+                                return True,sets[1],sets[2]
+        return False,"",0
+
+
+def answer(words):
+        global max
+        print("answer")
+        flag,phrase,num = conversation(words)
+        if flag:
+                cmd = '/home/pi/src/aquestalkpi/AquesTalkPi -s 100 "     {0}" | aplay'.format(phrase)
+                #subprocess.check_output(cmd,shell=True)
+
+                print('{0}'.format(phrase))
+                os.system(cmd)
+
+                if num == 0:
+                        pass
+                else:
+                        if num == 1:
+                                aTemps = max.read()
+                                sTemp = str(math.floor(aTemps["HJ"]*0.0625+0.0001))
+                                phrase = "ただいまの部屋の温度は　　"+sTemp+"度です。"
+                        elif num == 2:
+                                now = datetime.now()
+                                hh = now.strftime("%H")
+                                mm = now.strftime("%M")
+                                phrase = "ただいまの時刻は   "+hh+"時"+mm+"分です                        elif num == 3:
+                                now = datetime.now()
+                                MM = now.strftime("%m")
+                                DD = now.strftime("%d")
+                                locale.setlocale(locale.LC_TIME,'ja_JP.UTF-8')
+                                dd = now.strftime("%a")
+                                if DD == "20":
+                                        DD = "はつか"
+                                elif DD == "01":
+                                        DD = "ついたち"
+                                elif DD == "02":
+                                        DD = "ふつか"
+                                elif DD == "03":
+                                        DD = "みっか"
+                                elif DD == "04":
+                                        DD = "よっか"
+                                elif DD == "05":
+                                        DD = "いつか"
+                                elif DD == "06":
+                                        DD = "むいか"
+                                elif DD == "07":
+                                        DD = "なのか"
+                                elif DD == "08":
+                                        DD = "ようか"
+                                elif DD == "09":
+                                        DD = "ここのか"
+                                elif DD == "10":
+                                        DD = "とおか"
+                                elif DD == "09":
+                                        DD = "ここのか"
+                                elif DD == "09":
+                                        DD = "ここのか"
+                                elif DD == "19":
+                                        DD = "じゅうくにち"
+                                elif DD == "29":
+                                        DD = "にじゅうくにち"
+                                else:
+                                        DD = DD+"にち"
+
+                                phrase = "今日は   "+MM+"がつ"+DD+"　"+dd+"曜日です。"
+                        elif num == 4:
+                                nn = random.randint(0,4)
+                                if nn == 0:phrase = "　　　　われ思う、　　ゆえに、　　われあ
+り。　　　　　　　パスカル"
+                                elif nn == 1:phrase = "　　　　小さな成功の積み重ねだけが、大
+成功に導いてくれる"
+                                elif nn == 2:phrase = "　　　　自分を追い込んで、成果を残す。
+自分にプレッシャーを掛けなさい"
+                                elif nn == 3:phrase = "　　　　午前中の数分のトレーニングが脳
+を若返らせる。トレーニングを続けることで、老いた脳から若い脳へ。"
+                                elif nn == 4:phrase = "　　　　脳にとっての幸福は、学び続け、
+成長し続け、達成を繰り返すこと。"
+                        cmd = '/home/pi/src/aquestalkpi/AquesTalkPi -s 100 "　　　{0}" | aplay'.format(phrase)
+                        print('{0}'.format(phrase))
+                        os.system(cmd)
+
+                return True
+ttBefore = ""
+while True:
+        tt = os.path.getmtime("hear.txt")
+        if(tt != ttBefore):
+                ttBefore = tt
+                words = []
+                for line in codecs.open("hear.txt","r","shift_jis"):
+                        words.append(line.strip())
+                answer(words)
+        sleep(1)
+</pre>
+</div>
+
+<h2>まとめ</h2>
+<div class="pp">
+<ol>
+<li>google.txtの編集
+<li>bash conv.shの実行
+<li>google.vocaの編集
+<li>bash julius-module.shの実行
+<li>python3 hear.pyの実行
+<li>python3 answer.pyの実行
+</ol>
+
+</div>
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181209">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
