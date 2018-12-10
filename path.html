@@ -1,0 +1,105 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="シェルで自作コマンド">
+<title>シェルで自作コママンド|がらめきドットコム</title>
+</head><body id="body">
+<h1>シェルで自作コマンド</h1>
+gitのバージョン管理をbashでやったので、bashがかけるようになった。デーモンサービスを開始するに当たって、Bashでよく使うコードをライブラリ化して、コマンドとして使えるようにした。
+<h2>よく使うシェルソースをライブラリ化する</h2>
+<div class="pp">
+<pre>
+$ cd ~
+$ mkdir lib
+$ cd lib
+$ mkdir bin
+$ cd bin
+$ vim myGetFilename
+</pre>
+<span class="spanExplain">~/lib/bin/myGetFilename</span>
+<pre>
+#Get last name of path given
+#Usage:
+#	getFilename [path]
+		return : last name of path
+#		path : for example : /hoge/fuga/piyo.txt
+myGetFilename(){
+
+	arg=$1
+	for ele in ${arg//\// }; do
+		:
+	done
+	echo $ele
+}
+pp=$(pwd)
+_filename=$(myGetFilename $pp)
+echo $_filename
+
+</pre>
+<pre>
+$ chmod 750 myGetFilename
+$ cd
+$ vim .bashrc
+</pre>
+<span class="spanExplain">~/.bashrc</span>
+<pre>
+export PATH=$PATH:~/lib/bin/
+</pre>
+<pre>
+$ source .bashrc</pre>
+$ myGetFilename $(pwd)
+pi
+</pre>
+できた。
+</div>
+
+<h2>デーモンで自作コマンドを使う</h2>
+<div calss="pp">
+つまり、Unit定義ファイルの中でExecStartで指定されているシェルスクリプトの中にある自作コマンドが実行可能かどうかという問題。
+~/.bashrcで通したpathは、xtermを起動した時、もしくは、piユーザーにログインしたときに読まれるはず。<br>
+ということは、デーモン起動時には、このパスは通っていないということになる。<br>
+試してみよう
+<span class="spanExplain">~/myCommandTest.service</span>
+<pre>
+[Unit]
+Description=myGetFilename Test
+
+[Service]
+ExecStart=/home/pi/myCommandTest.sh
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+<pre>
+$ sudo ln -s /home/pi/myCommandTest.service /etc/systemd/system/
+$ systemctl list-unit-files --type=service | grep my
+myCommandTest.service                  linked   
+$ systemctl enable myCommandTest
+Created symlink /etc/systemd/system/multi-user.target.wants/myCommandTest.service → /home/pi/myCommandTest.service.
+</pre>
+<br>
+次に、デーモンプログラムを用意する
+<span class="spanExplain">/home/pi/myCommandTest.sh</span>
+<pre>
+#!/bin/bash
+
+export PATH=$PATH:/home/pi/lib/bin#Add path to self-made command
+
+aa=/home/pi/piyo.py
+bb=$(myGetFilename $aa)
+echo $bb > /home/pi/myCommandTest.txt
+</pre>
+自作コマンドmyGetFilenameが仕込まれている。<br>
+<br>
+うまく実行されれば、/home/pi/myCommandTest.txtにpiyo.pyが入るはず。
+<pre>
+$ chmod 750 myCommandTest.sh
+$ sudo reboot
+</pre>
+<span class="spanExplain">/home/pi/myCommandTest.txt</span>
+<pre>
+piyo.py
+</pre>
+</div>
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181211">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
