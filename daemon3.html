@@ -1,0 +1,95 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="ラズパイとMAX31856とR-Type熱電対で温度を測るサービス(daemon)の制作">
+<title>温度を測るサービスの制作|がらめきドットコム</title>
+</head><body id="body">
+<h1>温度を測るサービスの制作</h1>
+
+<h2>Unitを作るシェル</h2>
+<div class="pp">
+サービスを作るたびに同じことするのもなんなので、シェルにした。
+<pre>
+#!/bin/bash
+
+_stem=websocket-client-max31856-9801
+_description="Send sockets of temperature from max31856"
+_forward=/etc/systemd/system/
+
+_here=$(pwd)
+
+_STEM=$_here/$_stem
+
+sed s/$^//<< EOS > $_STEM.service 
+[Unit]
+Description=$_description
+
+[Service]
+ExecStart=$_STEM.sh
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOS
+
+sudo chmod 640 $_STEM.service
+sudo ln -fs $_STEM.service $_forward
+sudo systemctl enable $_STEM.service
+</pre>
+<span class="spanExplain">やっていること</span>
+<ul>
+<li>UNITの作成
+<li>/etc/systemd/system/へのシンボリックリンクの配置
+<li>デーモン化の許可
+</ul>
+</div>
+
+<h2>サービスプログラムを起動するシェルスクリプト</h2>
+<div class="pp">
+ここに書いてある内容がサービスプログラムなのではなく、pythonのコードがサービスプログラム
+<pre>
+#!/bin/bash
+
+aa=$(nc -z -w 1 192.168.3.8 9801 > /home/pi/result.txt)
+if [[ $aa=~success ]]; then
+	/usr/bin/python3 /home/pi/src/websocket/client-max31856/websocket-client-max31856-9801.py >> /home/pi/result.txt
+	echo success >> /home/pi/result.txt
+else
+	echo failure >> /home/pi/result.txt
+	exit 1
+fi
+</pre>
+ncでポートに対するpingを行い、通ったら、サービスを開始するようにしている。
+</div>
+
+<h2>websocket</h2>
+<div class="pp">
+これはgithubからとってきたもの<br>
+githubで「websocket-client」で検索。<br>
+websocket-client-max31856-9801.pyの中でimport websocketされているもの。<br>
+このフォルダを.shと同じフォルダに入れておかないと、サービスが起動できない。<br>
+</div>
+
+<h2>サービスが動かない時</h2>
+<div class="pp">
+<span class="spanExplain">役に立つコマンド</span>
+<ul>
+<li>journalctl -xe
+<li>less /var/log/syslog
+<li>systemctl status websocket-client-max31856-9801
+</ul>
+<span class="spanExplain">原因</span>
+<ul>
+<li>モジュールのパスが通っていない
+<li>WantedByのターゲット等が適切ではい
+<li>Restart=alwaysを使ったほうがいいかもしれない。特にサービスが、リブート後、正常に停止状態になっちゃっている時は。
+<li>.shの中は、全てフルパスにする
+<li>パスが間違えている
+<li>必要なサービスが起動していない=>Afterを使ったりする
+</ul>
+ラズパイのフォーラムも役に立ちます。<br>
+<a href="https://www.raspberrypi.org/forums/viewtopic.php?t=203359">今回お世話になった記事</a>
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181212">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
