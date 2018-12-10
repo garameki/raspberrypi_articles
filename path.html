@@ -57,7 +57,7 @@ pi
 つまり、Unit定義ファイルの中でExecStartで指定されているシェルスクリプトの中にある自作コマンドが実行可能かどうかという問題。
 ~/.bashrcで通したpathは、xtermを起動した時、もしくは、piユーザーにログインしたときに読まれるはず。<br>
 ということは、デーモン起動時には、このパスは通っていないということになる。<br>
-試してみよう
+なので、デーモンプログラムの中にexportで、パスを追加しておく。
 <span class="spanExplain">~/myCommandTest.service</span>
 <pre>
 [Unit]
@@ -82,10 +82,10 @@ Created symlink /etc/systemd/system/multi-user.target.wants/myCommandTest.servic
 <pre>
 #!/bin/bash
 
-export PATH=$PATH:/home/pi/lib/bin#Add path to self-made command
+<span class="spanGreen" style="font-size:20px;">export PATH=$PATH:/home/pi/lib/bin#Add path to self-made command</span>
 
 aa=/home/pi/piyo.py
-bb=$(myGetFilename $aa)
+bb=$(<span class="spanGreen">myGetFilename</span> $aa)
 echo $bb > /home/pi/myCommandTest.txt
 </pre>
 自作コマンドmyGetFilenameが仕込まれている。<br>
