@@ -18,22 +18,11 @@ $ vim myGetFilename
 <span class="spanExplain">~/lib/bin/myGetFilename</span>
 <pre>
 #Get last name of path given
-#Usage:
-#	getFilename [path]
-		return : last name of path
-#		path : for example : /hoge/fuga/piyo.txt
-myGetFilename(){
-
-	arg=$1
-	for ele in ${arg//\// }; do
-		:
-	done
-	echo $ele
-}
-pp=$(pwd)
-_filename=$(myGetFilename $pp)
-echo $_filename
-
+arg=$1
+for ele in ${arg//\// }; do
+	:
+done
+echo $ele
 </pre>
 <pre>
 $ chmod 750 myGetFilename
