@@ -90,6 +90,70 @@ websocket-client-max31856-9801.pyの中でimport websocketされているもの�
 <a href="https://www.raspberrypi.org/forums/viewtopic.php?t=203359">今回お世話になった記事</a>
 </div>
 
+<h2>サービスが落ちる</h2>
+<div calss="pp">
+<ul>
+<li><a href="https://qiita.com/a_yasui/items/f2d8b57aa616e523ede4">参照　プロセスが異常終了したときの動作</a>
+</ul>
+<span class="spanExplain">system status websocket-client-max31856-9801</span>
+<pre>
+<span style="color:red;">●</span> websocket-client-max31856-9801.service - Send sockets of temperature from max31856
+   Loaded: loaded (/home/pi/src/websocket/client-max31856/websocket-client-max31856-9801.service; enabled; vendor preset: enabled)
+   Active: failed (<span class="spanGreen" style="font-weight:bold;">Result: start-limit-hit</span>) since Tue 2018-12-11 13:55:55 JST; 1s ago
+  Process: 27614 ExecStart=/home/pi/src/websocket/client-max31856/websocket-client-max31856-9801.sh (code=exited, status=0/SUCCESS)
+ Main PID: 27614 (code=exited, status=0/SUCCESS)
+
+12月 11 13:55:55 raspberrypi systemd[1]: websocket-client-max31856-9801.service: Service hold-off time over, scheduling restart.
+12月 11 13:55:55 raspberrypi systemd[1]: Stopped Send sockets of temperature from max31856.
+12月 11 13:55:55 raspberrypi systemd[1]: websocket-client-max31856-9801.service: <span class="spanGreen">Start request repeated too quickly.</span>
+12月 11 13:55:55 raspberrypi systemd[1]: <span style="color:red;">Failed to start Send sockets of temperature from max31856.</span>
+12月 11 13:55:55 raspberrypi systemd[1]: websocket-client-max31856-9801.service: Unit entered failed state.
+12月 11 13:55:55 raspberrypi systemd[1]: websocket-client-max31856-9801.service: Failed with result 'start-limit-hit'.
+</pre>
+緑色のところが気になる。手動で再起動しても落ちる。<br>
+<br>
+<span class="spanExplain">このときのUNIT</span>
+<pre>
+[Unit]
+Description=Send sockets of temperature from max31856
+
+[Service]
+ExecStart=/home/pi/src/websocket/client-max31856/websocket-client-max31856-9801.sh
+<span class="spanGreen">Restart=always</span>
+
+[Install]
+WantedBy=multi-user.target
+</pre>
+ステータス表示で、repeated quicklyとなっているので、とりあえず、Restartを(緑色の部分を)削除して、起動させた
+ 
+<span class="spanExplain">その結果</span>
+<pre>
+● websocket-client-max31856-9801.service - Send sockets of temperature from max31856
+   Loaded: loaded (/home/pi/src/websocket/client-max31856/websocket-client-max31856-9801.service; enabled; vendor preset: enabled)
+   Active: inactive (<span class="spanGreen" style="font-size:25px;font-weight:bold;">dead</span>) since Tue 2018-12-11 16:19:31 JST; 11s ago
+ Main PID: 32440 (code=exited, status=0/SUCCESS)
+
+12月 11 16:19:30 raspberrypi systemd[1]: Started Send sockets of temperature from max31856.
+12月 11 16:19:31 raspberrypi websocket-client-max31856-9801.sh[32440]: Connection is already closed.
+12月 11 16:19:31 raspberrypi websocket-client-max31856-9801.sh[32440]: ### closed ###
+</pre>
+死んだ。結果が### closed ###となっているのは、曲がりなりにも、正常に終了した証拠だ。
+</div>
+
+
+<h2>websocketライブラリを見たんだけど、__all__とか出てきてよくわからないので、ソケットクライアントを自作することにした</h2>
+<div calss="pp">
+<<n class="spanExplain">参考サイト</span>
+<ul>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+</div>
 
 <br><br>以上
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181212">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
