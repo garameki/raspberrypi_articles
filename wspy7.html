@@ -1,0 +1,75 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="websocketクラスの作成">
+<title>websocketクラスの作成|がらめきドットコム</title>
+</head><body id="body">
+<h1>websocketクラスの作成</h1>
+<div calss="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li>特になし。
+</ul>
+</div>
+
+<h2>コード</h2>
+<div class="pp">
+<span class="spanExplain">pysocket_client.py</span>
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+from lib import pt
+from handshake import handshake
+from send import send
+from receive import receive
+from close import close
+from error import *
+
+import socket
+import select
+
+
+class Pysocket:
+	def __init__(self,host,port):
+		self.sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+		try:
+			self.sock.connect((host,port))
+			handshake(self.sock)
+
+		except BrokenPipeError:
+			print("\nパイプが切断されました。")
+		except ConnectionRefusedError:
+			print("\n接続できませんでした。HOST:{} PORT:{}".format(host,port))
+		except KeyboardInterrupt:
+			close(self.sock)
+			receive(self.sock)
+			print("\n切断しました。")
+		except:
+			raise
+
+
+	def send(self,data):
+		send(self.sock,data)
+		response = receive(self.sock)
+		return response
+
+	def close(self):
+		close(self.sock)
+
+
+if __name__ == '__main__':
+	host = "192.168.3.6"
+	port = 9801
+	wmax = Pysocket(host,port)
+	data = "toC 26.55"
+	wmax.send(data)
+	wmax.close()
+</pre>
+いたってシンプルです。receive()メソッドはありません。なぜなら、データを送ったときにしか、データが返ってこないからです。つまり、相手先のサーバーにとって、唯一のデータ送信者であることが前提となっているからです。<br>
+これなら、わざわざサーバーを経由しないで、自分でデータを送りつけるサーバーにしたら良いと思います。<br>
+次回はそうします。
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181219">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
