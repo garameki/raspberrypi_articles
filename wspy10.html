@@ -14,6 +14,7 @@
 
 <h2>コード</h2>
 <div class="pp">
+websocket-client-max31856-9801というサービスを立ち上げます。<br>
 やることは、全て、シェルに書いてあります。
 <span class="spanExplain">setting.sh</span>
 <pre>
@@ -42,7 +43,6 @@ sudo chmod 640 $_STEM.service
 sudo ln -fs $_STEM.service $_forward
 sudo systemctl enable $_STEM.service
 </pre>
-websocket-client-max31856-9801というサービスを立ち上げます。<br>
 /etc/systemd/system/に作成したUnitファイルへのシンボリックリンクを貼ります。<br>
 最後に、サービスをデーモンとして動かすことを許可します。つまり、ラズパイが立ち上がったときに、このサービスも立ち上がります。<br>
 具体的には、ExecStartで指定したwebsocket-client-max31856-9801.shを実行します。<br>
