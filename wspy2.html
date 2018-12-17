@@ -1,0 +1,74 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="websocketに使えるハッシュの生成">
+<title>ハッシュの生成|がらめきドットコム</title>
+</head><body id="body">
+<h1>websocketのためのハッシュの生成</h1>
+
+<h2>コード</h2>
+<div class="pp">
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+import six
+import hashlib
+import base64
+
+def mkhash_16bytes_b64(data):
+	#文字列からハッシュを生成しさらにBASE64にエンコードして返す
+#	m = hashlib.new('ripemd160') #20桁 #opnsslのライブラリを使う時
+	digest = hashlib.md5(six.b(data)).digest() #16桁hashは[RFC6455]より
+	key = base64.b64encode(digest)
+#	print(data)
+	return key
+
+def mkhash_sha1_b64(data):
+	#文字列からハッシュを生成しさらにBASE64にエンコードして返す
+	m = hashlib.sha1(six.b(data))
+	digest = m.digest()
+	key = base64.b64encode(digest)
+	return key
+
+
+if __name__=='__main__':
+
+	#文字列を用いる例
+	s = "Nobody inspects"
+	print(mkhash_b64(s))
+
+	#乱数を用いる例
+	from rnd import getRND
+	a = getRND(20)
+	s=""
+	for ele in a:
+		s += chr(ele)
+	hs = mkhash_b64(s)
+	decoded = base64.b64decode(hs)
+	print(len(decoded))
+</pre>
+mkhash_16bytes_b64()は、16バイトのハッシュを生成するために使います。この16バイトのハッシュを使う理由は、RFC6455に書いてあります。簡単に言うと、websocketサーバーに16バイトのハッシュを送らなければいけないからです。<br>
+mkhash_sha1_b64()は、サーバーの確認に使います。自分が送ったハッシュを、サーバーが加工して戻してきますので、それが、本当に自分の送ったものかどうかを確認するためにこの関数は使われます。<br>
+メイン関数の部分に、生成例を書いておきました。
+</div>
+
+<h2>実行例</h2>
+<div calss="pp">
+<span class="spanExplain">example.py</span>
+<pre>
+from mkhash import *
+print(mkhash_16bytes_b64("Hello World"))
+print(mkhash_sha1_b64("Hello World"))
+</pre>
+<span class="spanExplain">結果</span>
+<pre>
+$ python3 example.py
+b'sQqNsWTgdUEFt6mb5y4/5Q=='
+b'Ck1VqNd45QIvq3AZd8XYQLvEhtA='
+</pre>
+Base64にエンコードしてあるから、よくわかりませんね。<br>
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181214">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
