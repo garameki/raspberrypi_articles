@@ -1,0 +1,43 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="ラズパイで乱数の取得">
+<title>ラズパイで乱数の取得|がらめきドットコム</title>
+</head><body id="body">
+<h1>ラズパイで任意のバイト数の乱数を配列で取得する</h1>
+ラズパイにはハードウェアの乱数発生機がついている。<br>
+<span class="spanExplain">参考サイト</span>
+
+<h2>コード</h2>
+<div class="pp">
+<span class="spanExplain">rnd.py</span>
+<pre>
+import subprocess
+
+def getRND(num):
+	cmd = ("sudo dd status=noxfer if=/dev/hwrng bs=1 count={} 2>/dev/null | od -t x1".format(num))
+	tmp = subprocess.Popen(
+		cmd,stdout=subprocess.PIPE,
+		shell=True).stdout.readlines()
+	eles = []
+	for ele in tmp:
+		ele = ele.decode('utf-8').strip().split(' ')
+		ele.pop(0)
+		eles.append(ele)
+	eles = [int(ee,16) for ele in eles for ee in ele] #flatten
+	return eles
+		
+</pre>
+</div>
+<h2>実行例</h2>
+<div class="pp">
+<pre>
+from rnd import getRND
+
+a = getRND(16)
+
+print(a)#[217, 248, 162, 181, 149, 246, 157, 81, 174, 74, 196, 102, 151, 198, 40, 119]
+</pre>
+</div>
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
