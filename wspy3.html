@@ -1,0 +1,67 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="データをマスクする">
+<title>データをマスクする|がらめきドットコム</title>
+</head><body id="body">
+<h1>データをマスクする</h1>
+ここでは、websocketのための送りたいデータをマスクする。<br>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="">[RFC6455]</a>
+</ul>
+
+<h2>コード</h2>
+<div class="pp">
+<span class="spanExplain">mask.py</span>
+<pre>
+#!/usr/bin/env python3
+#_*_ coding: utf-8 _*_
+
+
+import six
+import numpy
+
+def mask_data(key,data):
+	'''
+	4バイトのキーでデータをxorマスクします
+	Usage:
+		bKey,bMasked = mask_data(aKey,sData)
+	Returns:
+		(bytes) bKey  : is the key from aKey
+		(bytes) bData : is masked data
+	Arguments:
+		(array) aKey : is key contains 4 byte integer.
+		(str) sData  : is letters to be sended
+	'''
+	length = len(data);
+	data += "0" * (4 - length % 4);
+	data = six.b(data);
+	data = numpy.frombuffer(data,dtype="uint32");
+
+	key2 = key[3] << 24 | key[2] << 16 | key[1] << 8 | key[0];
+
+	maskdata = numpy.bitwise_xor(data,[key2]).astype("uint32");
+	maskdata = maskdata.tobytes()[:length];
+
+	key3 = ""
+	for ele in key:
+		key3 += chr(ele)
+	key3 = six.b(key3);
+
+	return key3,maskdata #keyは送りやすい形に直して返す
+
+if __name__ == '__main__':
+	#EXAMPLE
+	key = [0x37,0xfa,0x21,0x3d]
+	data = "Hello"
+	keybytes,maskdata = mask_data(key,data)
+	print('keybytes =',keybytes)
+	print('maskdata =',maskdata)
+</pre>
+何をやっているのかというと、与えた4バイトのキーをデータバイトの最初の4バイトにあてがって、XORをとり、それを4バイトごとに繰り返すだけです。<br>
+最終的にはバイト文字列として返しています。
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181215">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
