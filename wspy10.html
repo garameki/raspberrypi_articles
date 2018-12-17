@@ -74,6 +74,25 @@ sleep 5としてあるのは、ラズパイ起動時に、ネットが立ち上�
 もうひとつ、ncコマンドの前の2&gt;&amp;は、こうしないと、ncの出力を読み込めないからです。1、つまり、stdoutを複製(&amp;)してから出ないとうまく行きませんでした。<br>
 </div>
 
+<h2>起動、停止、再起動、確認</h2>
+<div class="pp">
+<span class="spanExplain">起動</span>
+<pre>
+$ systemctl start websocket-client-max31856-9801
+</pre>
+<span class="spanExplain">停止</span>
+<pre>
+$ systemctl stop websocket-client-max31856-9801
+</pre>
+<span class="spanExplain">再起動</span>
+<pre>
+$ systemctl restart websocket-client-max31856-9801
+</pre>
+<span class="spanExplain">状態確認</span>
+<pre>
+$ systemctl status websocket-client-max31856-9801
+</pre>
+</div>
 
 <br><br>以上
 <br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181222">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
