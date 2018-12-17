@@ -1,0 +1,77 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="websocketのフレームづくり">
+<title>websocketのフレームづくり|がらめきドットコム</title>
+</head><body id="body">
+<h1>websocketのフレームづくり</h1>
+
+<h2>コード</h2>
+<div class="pp">
+<span class="spanExplain">frame.py</span>
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+from rnd import getRND
+from mask import mask_data
+from error import *
+
+
+import six
+import select
+
+
+class Frame:
+	OPCODES = (0x0,0x1,0x2,0x8,0x9,0xa)
+	OPCODE_TEXT = 0x1
+	OPCODE_CLOSE = 0x8
+
+	@staticmethod
+	def create(opcode,msg):
+		fin = 1
+		rsv1 = 0
+		rsv2 = 0
+		rsv3 = 0
+		mask = 1
+
+		if any(x not in (0,1) for x in [fin,rsv1,rsv2,rsv3]):
+			raise FirstFrameBitError
+		if opcode not in Frame.OPCODES:
+			raise OpcodeError
+		length = len(msg)
+		if length > 125 :
+			raise TooLongMessaeError
+
+		byte = fin *   0x80
+		byte += rsv1 * 0x40
+		byte += rsv2 * 0x20
+		byte += rsv3 * 0x10
+		byte += opcode
+		frame_header = chr(byte)
+		frame_header += chr(mask * 0x80 + length)
+		frame_header_bytes = six.b(frame_header)
+
+		mask_key = getRND(4)
+		mask_key_bytes,data_masked_bytes = mask_data(mask_key,msg)
+
+		frame = frame_header_bytes + mask_key_bytes + data_masked_bytes
+		return frame
+
+if __name__ == '__main__':
+	print(Frame.OPCODE_CLOSE)
+	print(Frame.create(Frame.OPCODE_CLOSE,"dada dddd"))
+
+</pre>
+前回まで作成した、キーやデータのマスクなどを使って、RFC6455に即したフレームを作成し、すぐに送信できる状態(bytes class)でframeを返します。<br>
+このコードでは、送信できる文字列の長さは124バイトまでです。
+<br>
+名前空間を汚したくないので、クラスにしてあります。<br>
+メソッドはstaticにして、send()やclose()などと同様に、どこからでも呼べるようにしました。<br>
+なぜ、send()や、close()などをグローバルな関数にしたのかって？<br>
+それは、作成手順が、send()などの方が先だから、です。<br>
+パーツごとのファイルをライブラリとして、作成し、デバッグを済ませてから、(メイン関数があるのはそのなごり。)その、ライブラリを使って、コアとなるクラスを組み立てていくからです。メンテナンス性と拡張性があります。<br>
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181216">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
