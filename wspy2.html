@@ -4,6 +4,13 @@
 <title>ハッシュの生成|がらめきドットコム</title>
 </head><body id="body">
 <h1>websocketのためのハッシュの生成</h1>
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://qiita.com/KEINOS/items/c92268386d265042ea16">hashアルゴリズムとハッシュ値の長さ一覧</a>
+<li><a href="https://docs.python.jp/3.6/library/hashlib.html">セキュアハッシュおよびメッセージダイジェスト</a>
+</ul>
+
+
 
 <h2>コード</h2>
 <div class="pp">
@@ -17,8 +24,8 @@ import base64
 
 def mkhash_16bytes_b64(data):
 	#文字列からハッシュを生成しさらにBASE64にエンコードして返す
-#	m = hashlib.new('ripemd160') #20桁 #opnsslのライブラリを使う時
-	digest = hashlib.md5(six.b(data)).digest() #16桁hashは[RFC6455]より
+#	m = hashlib.new('ripemd160') #40桁20バイト #opnsslのライブラリを使う時
+	digest = hashlib.md5(six.b(data)).digest() #32桁16バイトhashは[RFC6455]より
 	key = base64.b64encode(digest)
 #	print(data)
 	return key
@@ -66,7 +73,7 @@ $ python3 example.py
 b'sQqNsWTgdUEFt6mb5y4/5Q=='
 b'Ck1VqNd45QIvq3AZd8XYQLvEhtA='
 </pre>
-Base64にエンコードしてあるから、よくわかりませんね。<br>
+Base64にエンコードしてあるから、よくわかりません。<br>
 </div>
 
 
