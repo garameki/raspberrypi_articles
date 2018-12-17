@@ -1,0 +1,97 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="websocketのsend,receive,close関数">
+<title>websocketのsend,receive,close関数|がらめきドットコム</title>
+</head><body id="body">
+<h1>websocketのsend,receive,close関数</h1>
+これらの関数は要です。
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href=""></a>
+<li><a href=""></a>
+<li><a href=""></a>
+</ul>
+
+<h2>コード</h2>
+<div class="pp">
+<span class="spanExplain">send.py</span>
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+from error import *
+from frame import Frame
+
+import socket
+import select
+
+def send(sock,msg):
+	length = len(msg)
+	frame = Frame.create(Frame.OPCODE_TEXT,msg)
+					
+	rrr,www,eee = select.select([],[sock],[],2)
+	if www:
+		while frame:
+			l = sock.send(frame)
+			frame = frame[l:]
+		return length
+	else:
+		raise UnavailableToSendError
+</pre>
+frameを送っています。socket.send()は、送信されたバイト数を返してくるので、送信しきれなかったバイトのための処理をしています。<br>
+select関数は、送信状態になるまで処理を待ってくれます。コードでは、最大2秒間は待つようにしてあります。60秒待ってもいいなんてpythonのリファレンスには載っていました。
+<br>
+<span class="spanExplain">receive.py</span>
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+import socket
+import select
+from error import *
+
+def receive(sock):
+	rr,ww,ee = select.select([sock],[],[],2)
+	if rr:
+		data = sock.recv(2048)
+		mm = ""
+		for ele in data:
+			mm += chr(ele)
+	#	print(mm,[format(ele,'02x') for ele in data])
+		return data
+	else:
+		raise UnavailableToReceiveDataError
+</pre>
+メッセージを受け取り、それをそのまま戻り値とします。
+<br>
+<span class="spanExplain">close.py</span>
+<pre>
+#!/usr/bin/enb python3
+#_*_ coding : utf-8 _*_
+
+from frame import Frame
+
+import socket
+import select
+from error import *
+
+
+def close(sock):
+	msg = "sayounara"
+	frame = Frame.create(Frame.OPCODE_CLOSE,msg)
+					
+	rrr,www,eee = select.select([],[sock],[],2)
+	if www:
+		while frame:
+			l = sock.send(frame)
+			frame = frame[l:]
+	else:
+		raise UnavailableToSendError
+</pre>
+frameにclose命令を乗せて送ります。クローズの理由を送っても良いので、sayounaraと送りますが、メッセージを使うかどうかは、サーバー次第です。
+
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181218">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
