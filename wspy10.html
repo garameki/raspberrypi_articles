@@ -1,0 +1,79 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="WebSocket Client Pysocket.pyプラスmax31856のサービスを立ち上げる">
+<title>WebSocket Client Pysocket.pyプラスmax31856のサービスを立ち上げる|がらめきドットコム</title>
+</head><body id="body">
+<h1>WebSocket Client Pysocket.pyプラスmax31856のサービスを立ち上げる</h1>
+<div calss="pp">
+<span class="spanExplain"></span>
+<ul>
+<li>特になし
+</ul>
+
+</div>
+
+<h2>コード</h2>
+<div class="pp">
+やることは、全て、シェルに書いてあります。
+<span class="spanExplain">setting.sh</span>
+<pre>
+#!/bin/bash
+
+_stem=websocket-client-max31856-9801
+_description="Send sockets of temperature from max31856"
+_forward=/etc/systemd/system/
+
+_here=$(pwd)
+
+_STEM=$_here/$_stem
+
+sed s/$^//<< EOS > $_STEM.service 
+[Unit]
+Description=$_description
+
+[Service]
+ExecStart=$_STEM.sh
+
+[Install]
+WantedBy=multi-user.target
+EOS
+
+sudo chmod 640 $_STEM.service
+sudo ln -fs $_STEM.service $_forward
+sudo systemctl enable $_STEM.service
+</pre>
+websocket-client-max31856-9801というサービスを立ち上げます。<br>
+/etc/systemd/system/に作成したUnitファイルへのシンボリックリンクを貼ります。<br>
+最後に、サービスをデーモンとして動かすことを許可します。つまり、ラズパイが立ち上がったときに、このサービスも立ち上がります。<br>
+具体的には、ExecStartで指定したwebsocket-client-max31856-9801.shを実行します。<br>
+なので、具体的なサービスの内容も、そのシェルプログラムを見なくてはなりません。
+<br><br>
+<span class="spanExplain">websocket-client-max31856-9801.sh</span>
+<pre>
+#!/bin/bash
+
+#pp=$(pwd)ルートになってしまうので使えません
+pp=/home/pi/src/websocket/client-max31856
+sleep 5
+aa=$(2&gt;&amp;1 nc -v -z -w 1 192.168.3.8 9801)
+if [[ $aa =~ succeeded ]]; then
+	echo "start"
+	/usr/bin/python3.5 $pp/websocket-client-max31856-9801-2.py
+else
+	echo "stop"
+	echo "port 192.168.3.8 9801 didn't pong"
+	systemctl stop websocket-client-max31856-9801
+	exit 1
+fi
+</pre>
+sleep 5としてあるのは、ラズパイ起動時に、ネットが立ち上がってから出ないと、ncコマンドが使えないからです。<br>
+そして、socketサーバーのポートにnet catを使って[ping]を試みます。反応がかえってきたら、クライアントプログラムwebsocket-client-max31856-9801-2.pyを動かします。前回のプログラムです。<br>
+[ping]の返事が返ってこなかったら、サービスを止めます。<br>
+ちなみに、デーモンはルートで実行されるので、pwdコマンドは/を返すだけです。<br>
+この中では、ファイルや、コマンドは全て絶対パスで指定します。<br>
+もうひとつ、ncコマンドの前の2&gt;&amp;は、こうしないと、ncの出力を読み込めないからです。1、つまり、stdoutを複製(&amp;)してから出ないとうまく行きませんでした。<br>
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181222">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
