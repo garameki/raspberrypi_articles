@@ -1,0 +1,69 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="エラーの作成">
+<title>エラーの作成|がらめきドットコム</title>
+</head><body id="body">
+<h1>エラーの作成</h1>
+<div calss="pp">
+<span class="spanExplain">参考サイト</span>
+<ul>
+<li>特になし
+</ul>
+エラーをうまくハンドリングできなければ、サービスが停止してしまいます。<br>
+try命令を使うのはそのためです。<br>
+サービスを停止しないということは、とても大変なことです。<br>
+リカバリまで世話しなければいけないからです。<br>
+エラーが出る前提で、コーディングします。
+</div>
+
+<h2>コード</h2>
+<div class="pp">
+<pre>
+class OpcodeError(Exception):
+	'''
+	opcodeが指定されたものではありません
+	'''
+	pass
+
+class TooLongMessageError(Exception):
+	'''
+	メッセージは125バイト以下です
+	'''
+	pass
+
+class FirstFrameBitError(Exception):
+	'''
+	fin,rsv1,2,3の数値が0,1ではありません
+	'''
+	pass
+
+class UnavailableToSendError(Exception):
+	'''
+	データが送信できなかった。
+	'''
+	pass
+
+class UnavailableToSendHandShakeError(Exception):
+	'''
+	ハンドシェイクが送信できなかった。
+	'''
+	pass
+
+class UnavailableToReceiveDataEror(Exception):
+	'''
+	サーバーからの返信が読み込めなかった。
+	'''
+	pass
+
+class HashNotMatchError(Exception):
+	'''
+	サーバーから返ってきたハッシュが自分のものと一致しなかった。
+	'''
+	pass
+</pre>
+ごくごく簡単な設定です。
+</div>
+
+
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181220">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
