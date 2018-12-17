@@ -6,6 +6,9 @@
 <h1>ラズパイで任意のバイト数の乱数を配列で取得する</h1>
 ラズパイにはハードウェアの乱数発生機がついている。<br>
 <span class="spanExplain">参考サイト</span>
+<ul>
+<li><a href="https://blog.ymyzk.com/2015/05/raspberry-pi-hardware-random-number-generator/">Raspberry Pi のハードウェア乱数生成器を利用する</a>
+</ul>
 
 <h2>コード</h2>
 <div class="pp">
@@ -14,7 +17,7 @@
 import subprocess
 
 def getRND(num):
-	cmd = ("sudo dd status=noxfer if=/dev/hwrng bs=1 count={} 2>/dev/null | od -t x1".format(num))
+	cmd = ("sudo dd status=noxfer if=/dev/hwrng bs=1 count={} 2&gt;/dev/null | od -t x1".format(num))
 	tmp = subprocess.Popen(
 		cmd,stdout=subprocess.PIPE,
 		shell=True).stdout.readlines()
@@ -40,4 +43,4 @@ print(a)#[217, 248, 162, 181, 149, 246, 157, 81, 174, 74, 196, 102, 151, 198, 40
 </div>
 
 <br><br>以上
-<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181213">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
