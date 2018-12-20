@@ -1,0 +1,412 @@
+<html lang='ja'><head><meta charset="utf-8"><meta http-equiv="Content-Style-Type" content="text/css"><link rel="stylesheet" type="text/css" href="style.css" /><link rel="stylesheet" type="text/css" href="style_fukidashi.css" />
+<script type="application/javascript" src="script.js"></script>
+<meta name="description" content="ラスパイのステータスや、自分のサービスのステータスをLCDに表示する">
+<title>LCDにステータスを表示する|がらめきドットコム</title>
+</head><body id="body">
+<h1>LCDに横スクロールで、ステータスを表示する</h1>
+<div calss="pp">
+LCDのいいところは、ディスプレイをつながなくても、情報が確認できるところ。これに音声認識を加えれば、キーボードもいらずに、知りたい情報をゲットできてしまう。
+<span class="spanExplain"></span>
+<ul>
+<li><a href=""></a>
+</ul>
+
+</div>
+
+<h2>コード</h2>
+<div class="pp">
+今回は、前回作ったLCD用のライブラリに追加機能をつけ、それを利用した横スクロールを実現しました。<br>
+上の行にはターゲット名、下の行にはその状態を表示し、たくさんのターゲットが、横スクロールで、次々に現れるというものです。
+<span class="spanExplain">acm1602.py</span>
+<pre>
+import time
+import smbus
+from time import sleep
+
+#Thanks.
+#from https://github.com/yuma-m/raspi_lcd_acm1602ni
+from character_table import INITIALIZE_CODES, LINEBREAK_CODE, CHAR_TABLE
+
+class ACM1602:
+	BUS_ADDR = 1
+	SLAVE_ADDR = 0x50
+	CONTROL_SET = 0x00
+	CONTROL_WRITE = 0x80
+
+	#default
+	bCD = 1
+	bRH = 2
+	bEMS = 6
+	bDOOC = 12
+	bFS = 0x38
+	bCDS = 0x1C
+
+	def __init__(self):
+		self.pos = [0,0,0]
+		self.lcd = smbus.SMBus(self.BUS_ADDR)
+		self.sleeptime = 0.01
+
+		#make instance
+		self.entryModeSet       = self.EntryModeSet()
+		self.displayOnOffControl= self.DisplayOnOffControl()
+		self.cursorDisplayShift = self.CursorDisplayShift()
+		self.functionSet        = self.FunctionSet()
+
+		#override Base class' property 'parent'
+		self.entryModeSet.parent        = self
+		self.displayOnOffControl.parent = self
+		self.cursorDisplayShift.parent  = self
+		self.functionSet.parent         = self
+
+		#initialize
+		self.functionSet.set(self.FunctionSet.DATA8_LINE2_YDOTS10)
+		self.clearDisplay()
+		self.entryModeSet.set(self.EntryModeSet.MOJIWOUTTARA_CURSOR_MIGI)
+		self.displayOnOffControl.set(self.DisplayOnOffControl.DISPON_CURSORON_BLINKON)
+
+	class Base:
+		def __init__(self):
+			self.parent = null #interface like Java This must be overrided when this class is inherited.
+		def set(self,num):
+			self.parent._set(num)
+		def dict(self):
+			for ele in self.__dict__:
+				print(ele)
+
+	def clearDisplay(self):
+			self._set(1)
+			self.pos[1] = 0
+			self.pos[2] = 0
+
+	def returnHome(self):
+			self._set(2)
+
+
+	class EntryModeSet(Base):
+		MOJIWOUTTARA_CURSOR_MIGI   = 0x6
+		MOJIWOUTTARA_CURSOR_HIDARI = 0x4
+		MOJIWOUTTARA_GAMEN_MIGI     = 0x5
+		MOJIWOUTTARA_GAMEN_HIDARI   = 0x7
+		def __init__(self):
+			pass
+		
+	class DisplayOnOffControl(Base):
+		DISPON_CURSORON_BLINKON    = 0xF
+		DISPON_CURSORON_BLINKOFF   = 0xE
+		DISPON_CURSOROFF_BLINKON   = 0xD
+		DISPON_CURSOROFF_BLINKOFF  = 0xC
+		DISPOFF_CURSORON_BLINKON   = 0xB
+		DISPOFF_CURSORON_BLINKOFF  = 0xA
+		DISPOFF_CURSOROFF_BLINKON  = 0x9
+		DISPOFF_CURSOROFF_BLINKOFF = 0x8
+		def __init__(self):
+			pass
+	
+	class CursorDisplayShift(Base):
+		SCREEN_HIDARI = 0x18
+		SCREEN_MIGI = 0x1C
+		CURSOR_HIDARI = 0x10
+		CURSOR_MIGI =0x14
+		def __init__(self):
+			pass
+
+	class FunctionSet(Base):
+		DATA8_LINE2_YDOTS8  = 0x3C
+		DATA8_LINE2_YDOTS10 = 0x38
+		DATA8_LINE1_YDOTS8  = 0x34
+		DATA8_LINE1_YDOTS10 = 0x30
+		DATA4_LINE2_YDOTS8  = 0x2C
+		DATA4_LINE2_YDOTS10 = 0x28
+		DATA4_LINE1_YDOTS8  = 0x24
+		DATA4_LINE1_YDOTS10 = 0x20
+		def __init__(self):
+			pass
+	
+	def setCGRAMAddress(self,xx):
+		xx = xx | 0x40
+		self._set(xx)
+	
+#	def setDDRAMAddress(self,gyou,retsu):
+#		if gyou < 1:gyou = 1
+#		if gyou > 2:gyou = 2
+#		if retsu < 1:retsu = 1
+#		if retsu > 16:retsu = 16
+#		addr = (gyou - 1) * 0x40 + retsu -1;	
+#		addr = addr | 0x80
+#		self._set(addr)
+
+	def setDDRAMAddress(self,xx):
+		xx = xx | 0x80
+		self._set(xx)
+
+
+	def sendMessage(self,strs,nLine):
+		nByte = 0
+		for ii in range(len(strs)):
+			nByte += self._put1(strs[ii],nLine)
+		return nByte
+
+	def send2Messages(self,str1,str2):
+		bytes1 = self.sendMessage(str1,1)
+		bytes2 = self.sendMessage(str2,2)
+
+		if bytes1 > bytes2:
+			self.sendMessage(' ' * (bytes1 -bytes2),2)
+		elif bytes2 > bytes1:
+			self.sendMessage(' ' * (bytes2 -bytes1),1)
+
+		return bytes1 if bytes1 > bytes2 else bytes2
+
+
+	def _set(self,num):
+		if self.lcd is not None:
+			self.lcd.write_byte_data(self.SLAVE_ADDR,self.CONTROL_SET,num)
+			time.sleep(0.01)
+		else:
+			self._message_not_open(self)#クラスメソッドの中からインスタンスメソッドを呼ぶときにはselfを渡す。
+	def _put1(self,str,nLine):
+
+		#nLine > 2 or nLine < 1 then エラー発生
+
+
+		if self.lcd is not None:
+			if str == " " or str == "　":
+				sp = 0.01
+			else:
+				sp = self.sleeptime
+			try:
+				bytes = CHAR_TABLE[str]
+			except KeyError:
+				bytes = CHAR_TABLE["X"]
+			if len(bytes) == 2:
+				sp = 0.01
+			for byte in bytes:
+				if nLine == 1:
+					self.setDDRAMAddress(self.pos[nLine])
+				else:
+					self.setDDRAMAddress(0x40 + self.pos[nLine])
+
+				if self.pos[nLine] > 39:
+					if nLine == 1:
+						self.setDDRAMAddress(0)
+					else:
+						self.setDDRAMAddress(0x40)
+					self.pos[nLine] = 0
+				self.lcd.write_byte_data(self.SLAVE_ADDR,self.CONTROL_WRITE,int(byte))
+				self.pos[nLine] += 1
+				#time.sleep(sp)
+				sp = self.sleeptime
+		else:
+			self._message_not_open()
+		return len(bytes)
+
+
+	def _message_not_open(self):
+		print(self)
+		print("self.lcd has been None yet.")
+
+	def speed(self,sp):
+		if sp < 0.01:sp = 0.01
+		self.sleeptime = sp
+	#sugars
+
+	def cls(self):
+		self.clearDisplay()
+	def cls1(self):
+		self.line1()
+		self.sendMessage("                 ")
+	def cls2(self):
+		self.line2()
+		self.sendMessage("                 ")
+	def line1(self):
+		self.setDDRAMAddress(0)
+	def line2(self):
+		self.setDDRAMAddress(0x40)
+		
+
+	def screenMigi(self,nn):
+		for i in range(nn):
+			self.cursorDisplayShift.set(self.CursorDisplayShift.SCREEN_MIGI)
+	def screenHidari(self,nn):
+		for i in range(nn):
+			self.cursorDisplayShift.set(self.CursorDisplayShift.SCREEN_HIDARI)
+	def cursorHidari(self,nn):
+		for i in range(nn):
+			self.cursorDisplayShift.set(self.CursorDisplayShift.CURSOR_HIDARI)
+	def cursorMigi(self,nn):
+		for i in range(nn):
+			self.cursorDisplayShift.set(self.CursorDisplayShift.CURSOR_MIGI)
+</pre>
+sendMessage()が、送ったバイト数を返すようにしたり、上下の行に同時に文字列を表示するためのsend2Messages()などを追加した。<br><br><br>
+<span class="spanExplain">yoko_scroll.py</span>
+<pre>
+import time
+import smbus
+from time import sleep
+from acm1602 import ACM1602
+import threading
+import subprocess
+
+a = ACM1602()
+a.cls()
+a.speed(0.01)
+a.sendMessage("コンニチハ",1)
+a.pos[1] = 20 #カーソルの位置
+a.pos[2] = 20 #カーソルの位置
+a.stop = False #Trueでthread終了
+
+
+messages1 = [" "]
+messages2 = [" "]
+
+class MyThread1(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+
+	def run(self):
+
+		while True:
+			a.screenHidari(1)
+			a.pos[0] += 1
+			time.sleep(0.1)
+			if a.stop: break
+
+class MyThread2(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+
+	def run(self):
+		i=0	
+		while True:
+			if a.stop: break
+			length = len(messages1)
+			begin = a.pos[0]
+			i += 1	
+			bytes = a.send2Messages(messages1[i%length],messages2[i%length])
+			bytes += a.send2Messages(" "," ")
+
+			if i > 2*length:
+				a.stop = True
+				break
+
+			while a.pos[0] != begin + bytes:
+				time.sleep(0.05)
+
+
+
+class MyThread3(threading.Thread):
+	def __init__(self):
+		threading.Thread.__init__(self)
+
+	def run(self):
+		while True:
+			if a.stop: break
+			nickname = "apache2"
+			name = nickname
+			check_service("NTP","ntp")
+			check_service("APACHE2","apache2")
+			check_service("WMAX31856","websocket-client-max31856-9801")
+			check_service("sys_kama","sys_kama")
+			check_usbmemory("USBメモリ","TOSHIBA")
+			check_cputemp("CPUオンド")
+			check_cpuvolt("CPUデンアツ")
+			time.sleep(5)
+			
+def check_service(nickname,name):
+	cmd = ("systemctl status {}".format(name))
+	tmp = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).stdout.readlines()
+	aa=""
+	for ele in tmp:
+		aa += ele.decode('utf-8')
+	import re
+	try:
+		status = re.search("(?<=Active:\s)[^\s]+",aa).group(0)
+	except AttributeError:
+		status = "None"
+	try:
+		n = messages1.index(nickname)
+		messages2[n] = status
+	except ValueError:
+		messages1.append(nickname)
+		messages2.append(status)
+
+def check_usbmemory(nickname,name):
+	cmd = ("mount -l | grep {}".format(name))
+	tmp = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).stdout.readlines()
+	aa=""
+	for ele in tmp:
+		aa += ele.decode('utf-8')
+	import re
+	if aa:
+		status = "OK"
+	else:
+		status = "BAD"
+
+	try:
+		n = messages1.index(nickname)
+		messages2[n] = status
+	except ValueError:
+		messages1.append(nickname)
+		messages2.append(status)
+
+def check_cputemp(nickname):
+	cmd = ("vcgencmd measure_temp")
+	tmp = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).stdout.readlines()
+	aa=""
+	for ele in tmp:
+		aa += ele.decode('utf-8')
+	import re
+	try:
+		temp=re.search("(?<=temp=)[^\s]+",aa).group(0)
+	except AttributeError:
+		temp = "BAD"
+	try:
+		n = messages1.index(nickname)
+		messages2[n] = temp
+	except ValueError:
+		messages1.append(nickname)
+		messages2.append(temp)
+
+def check_cpuvolt(nickname):
+	cmd = ("vcgencmd measure_volts")
+	tmp = subprocess.Popen(cmd,stdout=subprocess.PIPE,shell=True).stdout.readlines()
+	aa=""
+	for ele in tmp:
+		aa += ele.decode('utf-8')
+	import re
+	try:
+		temp=re.search("(?<=volt=)[^\s]+",aa).group(0)
+	except AttributeError:
+		temp = "BAD"
+	try:
+		n = messages1.index(nickname)
+		messages2[n] = temp
+	except ValueError:
+		messages1.append(nickname)
+		messages2.append(temp)
+
+
+thread1 = MyThread1()
+thread2 = MyThread2()
+thread3 = MyThread3()
+thread1.start()
+thread2.start()
+thread3.start()
+thread1.join()
+thread2.join()
+thread3.join()
+
+</pre>
+スレッドを3つ使っている。グローバル変数にstopプロパティーを持たせて、それがTrueになったら、どのスレッドもループを抜け出すようにしてある。<br>
+1つめのスレッドは画面をひたすら左にスクロールするだけの役割。<br>
+2つめのスレッドは画面の外に出してあるカーソルが、画面に入ってこないように、1つ目のスレッドと同期を取って、文字列を表示している。<br>
+3つめのスレッドはもっぱら、サービスや、ラズパイなどの情報を収集して、グローバルの配列に書き込む処理を、行っている。
+</div>
+
+<h2>あとがき</h2>
+<div calss="pp">
+このLCDの表示を、ラズパイホームの機能にしたら、大変、使いやすいものになりました。<br>
+「ラズパイの調子は？」と聞くと、LCDに各種ステータスが表示されます。便利です。
+</div>
+<br><br>以上
+<br><hr><div style="text-align:right;"><a href="http://raspberrypi.garameki.com#20181224">がらめきドットコム</a><br>Powered by RaspberryPi3B+ Raspbian stretch</div></body></html>
